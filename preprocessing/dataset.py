@@ -4,7 +4,6 @@ from __future__ import absolute_import, division
 
 import os
 import sys
-import glob
 import re
 import json
 import random
@@ -13,6 +12,7 @@ import cv2
 import numpy as np
 
 import tensorflow as tf
+import tensorflow_datasets as tfds
 
 from PIL import Image
 
@@ -305,7 +305,23 @@ class AgricultureVisionDataset(object):
          cls = _AgricultureVisionWrapper(self.dtype, self.augmentation, self.dataset_location, self.processed_paths)
          cls_attr = getattr(cls, f'{self.dtype}_data')
          setattr(AgricultureVisionDataset, f'{self.dtype}_data', cls_attr)
-         return cls
+         return cls_attr
+
+   def as_numpy(self):
+      """Converts datasets to numpy array format, using tensorflow_datasets."""
+      if self.dtype == 'full':
+         if not self.train_data or not self.val_data or not self.test_data:
+            raise ValueError("Missing dataset portions, construct dataset first before converting.")
+         complete_data = []
+         self.train_data = tfds.as_numpy(self.train_data)
+         self.val_data = tfds.as_numpy(self.val_data)
+         self.test_data = tfds.as_numpy(self.test_data)
+         return self.train_data, self.val_data, self.test_data
+      else:
+         if not hasattr(self, f'{self.dtype}_data'):
+            raise ValueError("Missing dataset, construct first before converting.")
+         setattr(self, f'{self.dtype}_data', tfds.as_numpy(self.dtype_data))
+         return getattr(self, f'{self.dtype}_data')
 
 
 
