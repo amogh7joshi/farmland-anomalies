@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+.idea/
+.DS_Store
+.ipynb_checkpoints/
+
+**test*.py
+data/Agriculture-Vision.tar.gz
+data/Agriculture-Vision/
+data/Dataset/
+images/
