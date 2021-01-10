@@ -1,0 +1,9 @@
+numpy
+scipy
+tqdm
+opencv-python-headless
+tensorflow
+tensorflow_datasets
+matplotlib
+keras
+pillow

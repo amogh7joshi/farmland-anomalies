@@ -16,6 +16,43 @@ file contains the `AgricultureVisionDataset` object which is called from impleme
 For data inspection, including viewing all images associated with an ID or viewing all images belonging to a category, the `preprocessing/inspect.py`
 contains functionality for viewing and saving these images.
 
+## Usage
+
+You can install the repository from the command line:
+
+```shell script
+git clone https://github.com/amogh7joshi/crop-field-health.git
+```
+
+Then, in the proper directory, execute the following to install system requirements.
+
+```shell script
+python3 -m pip install -r requirements.txt
+```
+
+Once you have acquired the compressed dataset, place it in the `data/` directory and execute the 
+`expand.sh` script. To process the dataset, then run the `preprocess.sh` script. After that, the dataset can be 
+imported by calling 
+
+```python
+from preprocessing.dataset import AgricultureVisionDataset
+```
+
+and you can work with it as follows:
+
+```python
+dataset = AgricultureVisionDataset()
+dataset.construct()
+
+# Access dataset attributes.
+dataset.train_data # Training Data.
+dataset.val_data # Val Data.
+dataset.test_data # Test Data.
+
+# Convert dataset from tensors to numpy arrays.
+dataset.as_numpy()
+```
+
 ## Agriculture-Vision Dataset
 
 This project makes use of the Agriculture-Vision dataset, containing aerial crop field images from multiple classes.
