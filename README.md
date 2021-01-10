@@ -24,7 +24,13 @@ You can install the repository from the command line:
 git clone https://github.com/amogh7joshi/crop-field-health.git
 ```
 
-Then, in the proper directory, execute the following to install system requirements.
+A Makefile is included for installation. To use it, run the following.
+
+```shell script
+make install
+```
+
+Otherwise, in the proper directory, execute the following to install system requirements.
 
 ```shell script
 python3 -m pip install -r requirements.txt
@@ -32,13 +38,13 @@ python3 -m pip install -r requirements.txt
 
 Once you have acquired the compressed dataset, place it in the `data/` directory and execute the 
 `expand.sh` script. To process the dataset, then run the `preprocess.sh` script. After that, the dataset can be 
-imported by calling 
+imported by calling:
 
 ```python
 from preprocessing.dataset import AgricultureVisionDataset
 ```
 
-and you can work with it as follows:
+You can work with it as follows:
 
 ```python
 dataset = AgricultureVisionDataset()
