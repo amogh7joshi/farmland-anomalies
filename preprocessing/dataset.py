@@ -246,15 +246,15 @@ class AgricultureVisionDataset(object):
       Parameters:
 
       dtype
-         The data type of the class, 'full' by default to return all dataset values, but can be adjusted
-         to 'train', 'val', or 'test' if you only want part of the dataset.
+            The data type of the class, 'full' by default to return all dataset values, but can be adjusted
+            to 'train', 'val', or 'test' if you only want part of the dataset.
       augmentation
-         If set to true, this optional parameter allows for image augmentation.
-         `NOTE`: This stage has not been implemented yet, to be added in the future.
+            If set to true, this optional parameter allows for image augmentation.
+            `NOTE`: This stage has not been implemented yet, to be added in the future.
       dataset_location
-         Optional parameter if you have a different dataset location than the existing one.
+            Optional parameter if you have a different dataset location than the existing one.
       processed_paths
-         Optional parameter if you have a different processed paths location than the existing one.
+            Optional parameter if you have a different processed paths location than the existing one.
 
       Usage:
 
