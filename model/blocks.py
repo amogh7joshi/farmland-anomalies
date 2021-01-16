@@ -37,20 +37,28 @@ def make_divisible(value, divisor, min_value = None):
 # Primary architecture functions.
 
 @validate_image_format
-def convolution_block(input, filters, kernel_size, strides = (1, 1), padding = 'same', activation = 'relu', use_bias = False):
+def convolution_block(input, filters, kernel_size, strides = (1, 1), padding = 'same',
+                      activation = 'relu', use_bias = False, block_name = None):
    """A convolution block: Convolution, BatchNormalization, and ReLU activation."""
    if isinstance(kernel_size, int):
       kernel_size = (kernel_size, kernel_size)
 
    with tf.name_scope('convolution_block'):
-      x = Conv2D(filters, kernel_size = kernel_size, strides = strides, padding = padding, activation = activation,
-                 kernel_regularizer = l2(0.01), kernel_initializer = 'he_normal', use_bias = use_bias)(input)
-      x = BatchNormalization(momentum = 0.999)(x)
+      if block_name:
+         x = Conv2D(filters, kernel_size = kernel_size, strides = strides, padding = padding, kernel_regularizer = l2(0.01),
+                    kernel_initializer = 'he_normal', use_bias = use_bias, name = f'{block_name}_conv')(input)
+         x = BatchNormalization(momentum = 0.999, name = f'{block_name}_bn')(x)
+         x = ReLU(name = f'{block_name}_relu')(x)
+      else:
+         x = Conv2D(filters, kernel_size = kernel_size, strides = strides, padding = padding, kernel_regularizer = l2(0.01),
+                    kernel_initializer = 'he_normal', use_bias = use_bias)(input)
+         x = BatchNormalization(momentum = 0.999)(x)
+         x = ReLU()(x)
 
    return x
 
 @validate_image_format
-def separable_convolution_block(input, filters, kernel_size, strides = (1, 1), rate = 1):
+def separable_convolution_block(input, filters, rate = 1, kernel_size = (3, 3), strides = (1, 1)):
    """Depthwise separable Convolution Block: DepthwiseConvolution & Convolution."""
    if isinstance(kernel_size, int):
       kernel_size = (kernel_size, kernel_size)
@@ -61,37 +69,44 @@ def separable_convolution_block(input, filters, kernel_size, strides = (1, 1), r
                           padding = depth_padding, use_bias = False)(input)
       x = BatchNormalization(momentum = 0.999)(x)
       x = ReLU()(x)
-      x = convolution_block(filters, kernel_size = (1, 1), padding = 'same')(x)
+      x = convolution_block(x, filters, kernel_size = (1, 1), padding = 'same')
 
    return x
 
 @validate_image_format
-def upsample_block(input, filters, kernel_size, strides = (1, 1), padding = 'same'):
+def upsample_block(input, filters, kernel_size, strides = (1, 1), padding = 'same', upsample = 2):
    """An upsampling block: Convolution and then Upsampling."""
    if isinstance(kernel_size, int):
       kernel_size = (kernel_size, kernel_size)
+   if isinstance(upsample, int):
+      upsample = (upsample, upsample)
 
    with tf.name_scope('upsampling_block'):
       x = Conv2D(filters, kernel_size = kernel_size, strides = strides, padding = padding, activation = 'relu',
                  kernel_initializer = 'he_normal')(input)
-      x = UpSampling2D(size = (2, 2))(x)
+      x = BatchNormalization()(x)
+      x = UpSampling2D(size = upsample, interpolation = 'bilinear')(x)
 
    return x
 
 @validate_image_format
-def inverted_resnet_block(input, expansion, strides, filters):
+def inverted_resnet_block(input, expansion, strides, filters, block_id):
    """Inverted ResNet block. Modified from tf.keras.applications.mobilenet_v2"""
    channels = input.shape[-1]
    pointwise_filters = make_divisible(int(filters), 8)
 
    with tf.name_scope('inverted_resnet_block'):
+      # Expansion.
       x = convolution_block(input, expansion * channels, kernel_size = (1, 1), padding = 'same',
-                            activation = 'relu', use_bias = False)
-      x = DepthwiseConv2D(kernel_size = (3, 3), strides = strides, activation = 'relu',
-                          padding = 'same', use_bias = False)(x)
-      x = BatchNormalization()(x)
+                            activation = 'relu', use_bias = False, block_name = f'block_{block_id}_expand')
+      # Depthwise.
+      x = DepthwiseConv2D(kernel_size = (3, 3), strides = strides, padding = 'same',
+                          use_bias = False, name = f'block_{block_id}_depthwise_conv')(x)
+      x = BatchNormalization(name = f'block_{block_id}_depthwise_bn')(x)
+      x = ReLU(name = f'block_{block_id}_depthwise_relu')(x)
+      # Projection.
       x = convolution_block(x, pointwise_filters, kernel_size = (1, 1), padding = 'same',
-                            activation = 'relu', use_bias = False)
+                            activation = 'relu', use_bias = False, block_name = f'block_{block_id}_project')
       if channels == pointwise_filters and strides == 1: # Skip connection.
          x = Add()([input, x])
 
