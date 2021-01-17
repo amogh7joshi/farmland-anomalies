@@ -224,6 +224,17 @@ class _AgricultureVisionContainer(object):
 
       return self.dataset
 
+   def create_evaluation_set(self):
+      """Creates a tf.data.Dataset for evaluation."""
+      file_locations = self.data_file_list
+
+      # Create datasets.
+      dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
+                       .map(lambda m: self.image_process(m)) \
+
+      return dataset
+
+
 class _AgricultureVisionWrapper(_AgricultureVisionContainer):
    def __init__(self, dtype, augmentation = False, dataset_location = None, processed_paths = None):
       """Wrapper class for the Agriculture-Vision Dataset, initializes certain parameters."""
@@ -330,6 +341,12 @@ class AgricultureVisionDataset(object):
             raise ValueError("Missing dataset, construct first before converting.")
          setattr(self, f'{self.dtype}_data', tfds.as_numpy(self.dtype_data))
          return getattr(self, f'{self.dtype}_data')
+
+   @staticmethod
+   def evaluation_dataset():
+      """Returns an evaluation dataset with a batch size of 1."""
+      cls = _AgricultureVisionContainer()
+      return cls.create_evaluation_set()
 
 
 
