@@ -290,8 +290,12 @@ class AgricultureVisionDataset(object):
          assert os.path.exists(processed_paths), f'Cannot find path {processed_paths}'
          self.processed_paths = processed_paths
 
+      # Track numpy conversions.
+      self._numpy_conversion = False
+
    def construct(self):
       """Construction method, which develops each dataset."""
+      self._numpy_conversion = False
       if self.dtype == 'full':
          complete_data = []
          for indx, dtype in enumerate(['train', 'val', 'test']):
@@ -309,6 +313,9 @@ class AgricultureVisionDataset(object):
 
    def as_numpy(self):
       """Converts datasets to numpy array format, using tensorflow_datasets."""
+      if self._numpy_conversion:
+         print("Datasets have already been converted to numpy format, skipping conversion.")
+      self._numpy_conversion = True
       if self.dtype == 'full':
          if not self.train_data or not self.val_data or not self.test_data:
             raise ValueError("Missing dataset portions, construct dataset first before converting.")
