@@ -8,4 +8,5 @@ __pycache__/
 data/Agriculture-Vision.tar.gz
 data/Agriculture-Vision/
 data/Dataset/
+data/models/
 images/
