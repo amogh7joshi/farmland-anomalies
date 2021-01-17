@@ -315,6 +315,7 @@ class AgricultureVisionDataset(object):
       """Converts datasets to numpy array format, using tensorflow_datasets."""
       if self._numpy_conversion:
          print("Datasets have already been converted to numpy format, skipping conversion.")
+         return
       self._numpy_conversion = True
       if self.dtype == 'full':
          if not self.train_data or not self.val_data or not self.test_data:
