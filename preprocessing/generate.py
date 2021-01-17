@@ -47,7 +47,7 @@ def get_paths(mode, dataset_dir):
    else:
       return image_dir, boundary_dir, mask_dir, image_files
 
-def generate(mode, output_dir, dataset_dir):
+def generate(mode, output_dir, dataset_dir, generate_class_labels = False):
    """Generate json files containing image path information for use in processing."""
    generation_modes = [] # List containing modes for generation, will be iterated over.
    if mode == 'all':
@@ -86,23 +86,24 @@ def generate(mode, output_dir, dataset_dir):
 
                # Add label images if mode is train or val, determine image classes from arrays.
                if mode != 'test':
-                  data_classes = get_classes(dataset_dir)
-                  for data_class in data_classes:
-                     image_dict[f'label_{data_class}'] = os.path.join(label_dir, data_class, f'{image_file}.png')
+                  if generate_class_labels:
+                     data_classes = get_classes(dataset_dir)
+                     for data_class in data_classes:
+                        image_dict[f'label_{data_class}'] = os.path.join(label_dir, data_class, f'{image_file}.png')
 
-                  # Determine which images demonstrate valid features, add to json.
-                  labels, classes = [], []
-                  for path_name, class_path in image_dict.items():
-                     if 'label' in path_name:
-                        class_name = path_name[6:]
-                        label_image = np.array(Image.open(os.path.join(dataset_dir, class_path))) / 255
-                        if label_image.any():
-                           classes.append(class_name)
-                        labels.append(label_image)
-                  if ~np.sum(labels, axis = 0).astype(bool).any():
-                     classes.append('background')
+                     # Determine which images demonstrate valid features, add to json.
+                     labels, classes = [], []
+                     for path_name, class_path in image_dict.items():
+                        if 'label' in path_name:
+                           class_name = path_name[6:]
+                           label_image = np.array(Image.open(os.path.join(dataset_dir, class_path))) / 255
+                           if label_image.any():
+                              classes.append(class_name)
+                           labels.append(label_image)
+                     if ~np.sum(labels, axis = 0).astype(bool).any():
+                        classes.append('background')
 
-                  image_dict['classes'] = classes
+                     image_dict['classes'] = classes
 
                # Append image dictionary to complete list of json dumps.
                json_dump.append(image_dict)
