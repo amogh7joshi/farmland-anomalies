@@ -1,5 +1,6 @@
 numpy
 scipy
+pandas
 tqdm
 opencv-python-headless
 tensorflow
