@@ -224,13 +224,15 @@ class _AgricultureVisionContainer(object):
 
       return self.dataset
 
-   def create_evaluation_set(self):
+   def create_evaluation_set(self, batch):
       """Creates a tf.data.Dataset for evaluation."""
       file_locations = self.data_file_list
+      if not batch:
+         batch = 1
 
       # Create datasets.
       dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
-                       .map(lambda m: self.image_process(m)) \
+                       .map(lambda m: self.image_process(m)).batch(batch)
 
       return dataset
 
@@ -343,10 +345,10 @@ class AgricultureVisionDataset(object):
          return getattr(self, f'{self.dtype}_data')
 
    @staticmethod
-   def evaluation_dataset():
+   def evaluation_dataset(batch = None):
       """Returns an evaluation dataset with a batch size of 1."""
-      cls = _AgricultureVisionContainer()
-      return cls.create_evaluation_set()
+      cls = _AgricultureVisionContainer(dtype = 'val')
+      return cls.create_evaluation_set(batch)
 
 
 
