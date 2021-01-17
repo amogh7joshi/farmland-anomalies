@@ -45,9 +45,9 @@ def ModifiedMobileNet(input_shape = (512, 512, 4), classes = 8, final_filters = 
    x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 64, block_id = 9)
 
    # Fifth inverted ResNet block.
-   x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 10)
-   x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 11)
-   x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 12)
+   # x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 10)
+   # x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 11)
+   # x = inverted_resnet_block(x, expansion = 6, strides = 1, filters = 96, block_id = 12)
 
    # Final convolution block.
    x = convolution_block(x, final_filters, kernel_size = (1, 1), block_name = 'final')

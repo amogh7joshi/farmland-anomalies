@@ -10,4 +10,3 @@ data/Agriculture-Vision/
 data/Dataset/
 images/
 training.py
-model/light_network.py
