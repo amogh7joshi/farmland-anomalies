@@ -20,7 +20,7 @@ dataset.construct()
 evaluation_data = dataset.evaluation_dataset(batch = 1)
 
 # Load model.
-model = load_model(type = 'light', weights = 'Model-16-0.9002')
+model = load_model(dtype = 'light', weights = 'Model-16-0.9002')
 
 # Construct list of evaluation classes.
 evaluation_classes = ['Background', 'Waterway', 'Standing Water', 'Weed Cluster',

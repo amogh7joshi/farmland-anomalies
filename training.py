@@ -31,7 +31,7 @@ ckpt = ModelCheckpoint(os.path.join(save_path, 'Model-{epoch:02d}-{val_accuracy:
 reduce_lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.1, patience = 8, verbose = 1)
 
 # Construct Model.
-model = load_model(type = 'light', compile = True)
+model = load_model(dtype = 'light', compile = True)
 
 # Fit model.
 results = model.fit(
