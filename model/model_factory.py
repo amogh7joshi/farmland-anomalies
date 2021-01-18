@@ -9,9 +9,9 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy, CategoricalCrossentropy
 
 from model.architecture import CropFieldHealthModel
-from model.light_network import light_model
+from model.light_network import light_model, light_model_v2
 
-def load_model(type = 'light', weights = None, compile = True):
+def load_model(dtype = 'light', weights = None, compile = True):
    """Load the Crop Field Health model w/ or w/o weights."""
    if not isinstance(weights, str): # Validate weights (if provided).
       raise TypeError("The weights argument should be a string containing the "
@@ -32,10 +32,12 @@ def load_model(type = 'light', weights = None, compile = True):
             raise FileNotFoundError(f"No weights file found for model {weights}.")
 
    # Initialize model, load weights if required to.
-   if type == 'crop':
+   if dtype == 'crop':
       model = CropFieldHealthModel()
-   elif type == 'light':
+   elif dtype == 'light':
       model = light_model()
+   elif dtype == 'lightv2':
+      model = light_model_v2()
    else:
       raise ValueError("Invalid model type recieved, should be 'crop' or 'light'.")
 
