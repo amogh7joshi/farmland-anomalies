@@ -1,6 +1,8 @@
 # Crop Field Health
 
-This project aims to assist large-scale agriculture using neural networks to detect anomalies in crop fields,
+![example](examples/evaluated-8.png)
+
+This project aims to assist large-scale agriculture using neural networks to conduct image segmentation to detect anomalies in crop fields,
 such as weed clusters, skipped planting, and water destruction. Considering the expansiveness of global crop fields,
 it is near-impossible to patrol crop fields on foot and resource-consuming and often largely expensive to try and have 
 humans analyze aerial images using existing technologies. This project simplifies existing solutions and provides an 
