@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-import os
-import sys
-
-import numpy as np
 
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import GlobalAveragePooling2D
 from tensorflow.keras.layers import Input, Dropout, Add, Concatenate
 
-from model.blocks import make_divisible
-from model.blocks import convolution_block, separable_convolution_block, upsample_block
-from model.blocks import inverted_resnet_block
+from model.complex.blocks import make_divisible
+from model.complex.blocks import convolution_block, separable_convolution_block, upsample_block
+from model.complex.blocks import inverted_resnet_block
 
 __all__ = ['CropFieldHealthModel']
 

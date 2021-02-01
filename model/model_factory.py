@@ -2,14 +2,11 @@
 # -*- coding = utf-8 -*-
 import os
 
-import numpy as np
-
-import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.losses import BinaryCrossentropy, CategoricalCrossentropy
+from tensorflow.keras.losses import CategoricalCrossentropy
 
-from model.architecture import CropFieldHealthModel
-from model.light_network import light_model, light_model_v2
+from model.complex.architecture import CropFieldHealthModel
+from model.light.light_network import light_model, light_model_v2
 
 def load_model(dtype = 'light', weights = None, compile = True):
    """Load the Crop Field Health model w/ or w/o weights."""
