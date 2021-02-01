@@ -73,7 +73,7 @@ def evaluate_validation_image(num = 10, mode = 'save'):
       # Save figure.
       if mode == 'save':
          savefig = plt.gcf()
-         save_path = os.path.join(os.path.dirname(__file__), 'images', f'evaluated-{i + 1}.png')
+         save_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', f'evaluated-{i + 1}.png')
          if os.path.exists(save_path):
             os.remove(save_path)
          savefig.savefig(save_path)
