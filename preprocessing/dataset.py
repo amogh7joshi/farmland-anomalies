@@ -21,10 +21,10 @@ __all__ = ['AgricultureVisionDataset']
 np.random.seed(0) # Set random seed to be predictable.
 
 class _AgricultureVisionContainer(object):
-   def __init__(self, dtype ='full', augmentation = False, dataset_location = None, processed_paths = None):
+   def __init__(self, dtype = 'full', augmentation = False, dataset_location = None, processed_paths = None):
       """Agriculture-Vision dataset container class for usage in model training."""
       # Set and parse default arguments.
-      assert dtype in ['full', 'train', 'val', 'test']
+      assert dtype in ['full', 'train', 'val', 'test'], f"Received invalid dtype '{dtype}.'"
       self.dtype = dtype
       self.augmentation = augmentation
 
@@ -303,12 +303,35 @@ class AgricultureVisionDataset(object):
          assert os.path.exists(processed_paths), f'Cannot find path {processed_paths}'
          self.processed_paths = processed_paths
 
-      # Track numpy conversions.
+      # Track numpy conversions and construction.
       self._numpy_conversion = False
+      self.constructed = False
+
+      # Set default class list.
+      self._class_list = ['Background', 'Waterway', 'Standing Water', 'Weed Cluster',
+                          'Double Plant', 'Planter Skip', 'Cloud Shadow', 'Invalid Pixels']
+
+   def __len__(self):
+      """Returns the length of the individual dataset or that of each dataset within the complete class."""
+      if not self.constructed:
+         raise NotImplementedError("You need to construct the dataset first before you can find its length.")
+      else:
+         if self.dtype == 'full':
+            total_len = 0
+            for dtype in ['train', 'val', 'test']:
+               cls = _AgricultureVisionContainer(dtype, self.augmentation, self.dataset_location, self.processed_paths)
+               print(len(cls))
+               total_len += len(cls)
+            return total_len
+         else:
+            if not hasattr(self, f'{self.dtype}_data'):
+               raise ValueError("Missing dataset, construct first before converting.")
+            return len(_AgricultureVisionWrapper(self.dtype, self.augmentation, self.dataset_location, self.processed_paths))
 
    def construct(self):
       """Construction method, which develops each dataset."""
       self._numpy_conversion = False
+      self.constructed = True
       if self.dtype == 'full':
          complete_data = []
          for indx, dtype in enumerate(['train', 'val', 'test']):
@@ -333,7 +356,6 @@ class AgricultureVisionDataset(object):
       if self.dtype == 'full':
          if not self.train_data or not self.val_data or not self.test_data:
             raise ValueError("Missing dataset portions, construct dataset first before converting.")
-         complete_data = []
          self.train_data = tfds.as_numpy(self.train_data)
          self.val_data = tfds.as_numpy(self.val_data)
          self.test_data = tfds.as_numpy(self.test_data)
@@ -345,10 +367,18 @@ class AgricultureVisionDataset(object):
          return getattr(self, f'{self.dtype}_data')
 
    @staticmethod
-   def evaluation_dataset(batch = None):
+   def evaluation_dataset(batch = None, numpy = False):
       """Returns an evaluation dataset with a batch size of 1."""
       cls = _AgricultureVisionContainer(dtype = 'val')
-      return cls.create_evaluation_set(batch)
+      eval_set = cls.create_evaluation_set(batch)
+      if numpy:
+         eval_set = tfds.as_numpy(eval_set)
+      return eval_set
+
+   @property
+   def class_list(self):
+      return self._class_list
+
 
 
 
