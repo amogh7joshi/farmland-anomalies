@@ -13,6 +13,7 @@ import numpy as np
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
+from tensorflow.keras import backend as K
 
 from PIL import Image
 
@@ -219,7 +220,7 @@ class _AgricultureVisionContainer(object):
       # Create datasets.
       dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
                                .map(lambda m: self.image_process(m)) \
-                               .batch(8).repeat().prefetch(8)
+                               .batch(8).prefetch(8)
       self.dataset = dataset
 
       return self.dataset
