@@ -10,7 +10,10 @@ import argparse
 
 import cv2
 import numpy as np
+from matplotlib import style
+style.use('seaborn-dark')
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gspec
 
 from PIL import Image
 
@@ -120,10 +123,9 @@ def show_random_specific_images(size, image_ids, image_types, paths_list, save =
          os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images'))
       savefig.savefig(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', 'inspected-specific.png'))
 
-
 def show_random_general_images(num_imgs, image_ids, paths_list, save = False):
    """Choose and display all images corresponding to a random selection of image IDs."""
-   assert 4 < num_imgs < 10, f"Number of images should be in range (4, 10), got {num_imgs}."
+   assert 1 <= num_imgs < 10, f"Number of images should be in range (4, 10), got {num_imgs}."
 
    # Choose a random selection of images.
    random_images = np.random.choice(image_ids, num_imgs, replace = False)
@@ -134,23 +136,45 @@ def show_random_general_images(num_imgs, image_ids, paths_list, save = False):
    # Plot image data.
    order = list(images[0].keys())
    fig, axes = plt.subplots(num_imgs, len(images[0]), figsize = (20, 16))
-   for indx, ax in enumerate(axes.flat):
+   fig.patch.set_facecolor('#2e3037ff')
+   gs1 = gspec.GridSpec(num_imgs, len(images[0]))
+   gs1.update(wspace = 0.1, hspace = 0.025)
+   for indx in range(num_imgs * len(images[0])):
+      # Get the ax from the gridspec object.
+      ax = plt.subplot(gs1[indx])
+      ax.set_aspect('equal')
+
       image_type = order[indx % len(images[0])]
       if image_type.find('label') != -1:
          image_type_title = image_type[6:]
       else:
          image_type_title = image_type
       if indx // 10 == 0:
-         ax.set_title(image_type_title, fontdict = {'fontsize': 18})
-      ax.imshow(images[indx // 10][image_type], vmin = 0, vmax = 255)
-   fig = plt.gcf()
+         # Replace image title.
+         if image_type_title in ['rgb', 'nir']:
+            image_type_title = image_type_title.upper()
+         else:
+            image_type_title = image_type_title.title()
+
+         # Set the title.
+         ax.set_title(image_type_title.replace('_', ' '),
+                      fontsize = 15, color = 'w')
+
+      # Display the image, with channels reversed.
+      ax.imshow(images[indx // 10][image_type], vmin = 0, vmax = 255, cmap = 'magma')
+
+      # Turn off axis.
+      ax.axis('off')
+
+   # Display the image.
+   savefig = plt.gcf()
    plt.show()
 
    # Saves figure to an image file.
    if save:
       if not os.path.exists(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images')):
          os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images'))
-      fig.savefig(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', 'inspected-general.png'))
+      savefig.savefig(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', 'inspected-general.png'))
 
 if __name__ == '__main__':
    # Construct and parse command line arguments.
@@ -171,7 +195,7 @@ if __name__ == '__main__':
    if args.mode == 'specific':
       show_random_specific_images((16, 10), image_files, 'boundary', complete_paths, args.save)
    elif args.mode == 'general':
-      show_random_general_images(6, image_files, complete_paths, args.save)
+      show_random_general_images(4, image_files, complete_paths, args.save)
    else:
       raise ValueError("You have provided an invalid mode, should be [random] or [general].")
 
