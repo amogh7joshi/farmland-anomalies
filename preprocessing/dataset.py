@@ -141,33 +141,67 @@ class _AgricultureVisionContainer(object):
       self.class_dict = class_dict
 
    @staticmethod
-   def augment(rgb, nir, mask, boundary) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+   def augment(*images, setting = None, return_setting = False) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
       """Create a list of spatially augmented images for each one provided (if self.augmented == True)."""
+      # Track the setting.
+      settings = []
+
+      # Create a list of images.
+      images_list = []
+      for image in images:
+         images_list.append(image)
+
+      # If a setting is given, then try and apply it here.
+      if setting:
+         # Horizontal flip.
+         if setting[0]:
+            for indx, image in enumerate(images):
+               images_list[indx], (tf.image.flip_left_right(image))
+         # Vertical flip.
+         if setting[1]:
+            for indx, image in enumerate(images):
+               images_list[indx], (tf.image.flip_up_down(image))
+         # Rotation.
+         for indx, image in enumerate(images):
+            images_list[indx] = (tf.image.rot90(image, k = setting[2]))
+         # Return the image(s) with or without settings.
+         if return_setting:
+            return images_list, setting
+         else:
+            return images_list
+
       # Horizontal flip transformation.
       if random.random() > 0.5:
-         rgb = tf.image.flip_left_right(rgb)
-         mask = tf.image.flip_left_right(mask)
-         boundary = tf.image.flip_left_right(boundary)
-         nir = tf.image.flip_left_right(nir)
+         for indx, image in enumerate(images):
+            images_list[indx], (tf.image.flip_left_right(image))
+         # Random flip was applied.
+         settings.append(True)
 
-      # Vertical flip transformation
+      # Vertical flip transformation.
       if random.random() > 0.5:
-         rgb = tf.image.flip_up_down(rgb)
-         mask = tf.image.flip_up_down(mask)
-         boundary = tf.image.flip_up_down(boundary)
-         nir = tf.image.flip_up_down(nir)
+         for indx, image in enumerate(images):
+            images_list[indx], (tf.image.flip_up_down(image))
+         # Random flip was applied.
+         settings.append(True)
 
       # Rotation transformation.
-      random_rotation = random.random(); rot_num = None
-      if random_rotation < 0.25: rot_num = 1
-      if 0.25 > random_rotation > 0.50: rot_num = 2
-      if 0.75 > random_rotation > 0.50: rot_num = 3
-      rgb = tf.image.rot90(rgb, k = rot_num)
-      mask = tf.image.rot90(mask, k = rot_num)
-      boundary = tf.image.rot90(boundary, k = rot_num)
-      nir = tf.image.rot90(nir, k = rot_num)
+      random_rotation = random.random()
+      rot_num = None
+      if random_rotation < 0.25:
+         rot_num = 1
+      if 0.25 > random_rotation > 0.50:
+         rot_num = 2
+      if 0.75 > random_rotation > 0.50:
+         rot_num = 3
+      for indx, image in enumerate(images):
+         images_list[indx] = (tf.image.rot90(image, k = rot_num))
+      # Add the rotation value.
+      settings.append(rot_num)
 
-      return rgb, mask, boundary, nir
+      if return_setting:
+         return images_list, settings
+      else:
+         return images_list
 
    def image_process(self, paths_list) -> (tf.Tensor, tf.Tensor):
       """Processes an image into corresponding training data and label."""
@@ -179,7 +213,11 @@ class _AgricultureVisionContainer(object):
 
       # Concatenate rgb and nir images into a single image.
       nrgb_image = tf.concat([nir_image, rgb_image], axis = 2)
+
+      # Invalid pixels, e.g. where the boundary or mask is invalid.
+      # Constructs an array containing the invalid pixels.
       invalid_pixels = tf.logical_or(boundary_image == 0, mask_image == 0)
+      # Determine where the invalid pixels are present in the regular image.
       nrgb_image = tf.where(invalid_pixels, tf.zeros_like(nrgb_image), nrgb_image)
       nrgb_image = tf.image.convert_image_dtype(nrgb_image, tf.float32)
 
@@ -195,7 +233,9 @@ class _AgricultureVisionContainer(object):
          new_indx = indx + 3
          # Read and add image to dict.
          current_label = tf.image.decode_image(tf.io.read_file(paths_list[new_indx]), channels = 1)
+         # Get the intersection between the current label and the valid (non-invalid) pixels.
          initial_labels[indx] = tf.logical_and(current_label > 0, tf.logical_not(invalid_pixels))
+         # Get the union between the background and the current label.
          initial_labels[0] = tf.logical_or(initial_labels[indx], initial_labels[0])
 
       # Create final image and label arrays.
