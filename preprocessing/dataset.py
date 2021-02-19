@@ -293,10 +293,9 @@ class _AgricultureVisionContainer(object):
 
       # Create datasets.
       dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
-                       .map(lambda m: self.image_process(m)).batch(batch)
+                       .map(lambda m: self.image_process(m)).batch(batch).prefetch(batch)
 
       return dataset
-
 
 class _AgricultureVisionWrapper(_AgricultureVisionContainer):
    def __init__(self, dtype, augmentation = False, dataset_location = None, processed_paths = None):
