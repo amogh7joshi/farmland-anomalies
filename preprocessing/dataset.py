@@ -141,6 +141,7 @@ class _AgricultureVisionContainer(object):
       self.class_dict = class_dict
 
    @staticmethod
+   @tf.function
    def augment(*images, setting = None, return_setting = False) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
       """Create a list of spatially augmented images for each one provided (if self.augmented == True)."""
       # Track the setting.
@@ -152,7 +153,7 @@ class _AgricultureVisionContainer(object):
          images_list.append(image)
 
       # If a setting is given, then try and apply it here.
-      if setting:
+      if setting is not None:
          # Horizontal flip.
          if setting[0]:
             for indx, image in enumerate(images):
@@ -162,8 +163,9 @@ class _AgricultureVisionContainer(object):
             for indx, image in enumerate(images):
                images_list[indx], (tf.image.flip_up_down(image))
          # Rotation.
-         for indx, image in enumerate(images):
-            images_list[indx] = (tf.image.rot90(image, k = setting[2]))
+         if setting[2] is not None:
+            for indx, image in enumerate(images):
+               images_list[indx] = (tf.image.rot90(image, k = setting[2]))
          # Return the image(s) with or without settings.
          if return_setting:
             return images_list, setting
@@ -176,6 +178,9 @@ class _AgricultureVisionContainer(object):
             images_list[indx], (tf.image.flip_left_right(image))
          # Random flip was applied.
          settings.append(True)
+      else:
+         # Random flip was not applied.
+         settings.append(False)
 
       # Vertical flip transformation.
       if random.random() > 0.5:
@@ -183,6 +188,9 @@ class _AgricultureVisionContainer(object):
             images_list[indx], (tf.image.flip_up_down(image))
          # Random flip was applied.
          settings.append(True)
+      else:
+         # Random flip was not applied.
+         settings.append(False)
 
       # Rotation transformation.
       random_rotation = random.random()
@@ -193,8 +201,9 @@ class _AgricultureVisionContainer(object):
          rot_num = 2
       if 0.75 > random_rotation > 0.50:
          rot_num = 3
-      for indx, image in enumerate(images):
-         images_list[indx] = (tf.image.rot90(image, k = rot_num))
+      if rot_num is not None:
+         for indx, image in enumerate(images):
+            images_list[indx] = (tf.image.rot90(image, k = rot_num))
       # Add the rotation value.
       settings.append(rot_num)
 
