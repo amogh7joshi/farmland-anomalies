@@ -1,0 +1,2 @@
+Model-06-0.8427 performs exceptionally well on weed cluster, perhaps refining and running it on more epochs will
+result in as close of a perfect result as I can *reasonably* get to the intended goal.
