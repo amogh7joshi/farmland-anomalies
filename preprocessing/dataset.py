@@ -211,6 +211,12 @@ class _AgricultureVisionContainer(object):
       boundary_image = tf.image.decode_image(tf.io.read_file(paths_list[2]), channels = 1)
       mask_image = tf.image.decode_image(tf.io.read_file(paths_list[3]), channels = 1)
 
+      # Apply augmentation.
+      if self.augmentation:
+         [rgb_image, nir_image, boundary_image, mask_image], _tracked_settings = self.augment(
+            rgb_image, nir_image, boundary_image, mask_image, return_setting = True
+         )
+
       # Concatenate rgb and nir images into a single image.
       nrgb_image = tf.concat([nir_image, rgb_image], axis = 2)
 
@@ -233,6 +239,11 @@ class _AgricultureVisionContainer(object):
          new_indx = indx + 3
          # Read and add image to dict.
          current_label = tf.image.decode_image(tf.io.read_file(paths_list[new_indx]), channels = 1)
+
+         # Apply augmentation.
+         if self.augmentation:
+            [current_label] = self.augment(current_label, setting = _tracked_settings)
+
          # Get the intersection between the current label and the valid (non-invalid) pixels.
          initial_labels[indx] = tf.logical_and(current_label > 0, tf.logical_not(invalid_pixels))
          # Get the union between the background and the current label.
