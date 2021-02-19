@@ -13,14 +13,14 @@ import tensorflow as tf
 
 from preprocessing.dataset import AgricultureVisionDataset
 from model.model_factory import load_model
-
+from tensorflow.keras.models import load_model
 # Construct Dataset.
 dataset = AgricultureVisionDataset()
 dataset.construct()
 evaluation_data = dataset.evaluation_dataset(batch = 1)
 
 # Load model.
-model = load_model(dtype = 'light', weights = 'Model-16-0.9002')
+model = load_model('../data/models/Model-08-0.8824.hdf5')
 
 # Construct list of evaluation classes.
 evaluation_classes = ['Background', 'Waterway', 'Standing Water', 'Weed Cluster',
@@ -49,7 +49,7 @@ def evaluate_validation_image(num = 10, mode = 'save'):
             ax.set_title('Original Image', fontdict = {'fontsize': 14})
             ax.imshow(x[0, :, :, 1:])
          elif indx < 9: # Show labels and masks.
-            ax.set_title(evaluation_classes[indx - 1], fontdict = {'fontsize': 14})
+            ax.set_title(dataset.class_list[indx - 1], fontdict = {'fontsize': 14})
             ax.imshow(y[0, :, :, indx - 1], cmap = 'gray')
          elif indx == 9: # Show original image (nir).
             ax.imshow(x[0, :, :, 0])
