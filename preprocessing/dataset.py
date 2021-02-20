@@ -426,10 +426,9 @@ class AgricultureVisionDataset(object):
          setattr(self, f'{self.dtype}_data', tfds.as_numpy(self.dtype_data))
          return getattr(self, f'{self.dtype}_data')
 
-   @staticmethod
-   def evaluation_dataset(batch = None, numpy = False):
+   def evaluation_dataset(self, batch = None, numpy = False):
       """Returns an evaluation dataset with a batch size of 1."""
-      cls = _AgricultureVisionContainer(dtype = 'val')
+      cls = _AgricultureVisionContainer(dtype = 'val', augmentation = self.augmentation)
       eval_set = cls.create_evaluation_set(batch)
       if numpy:
          eval_set = tfds.as_numpy(eval_set)
