@@ -35,9 +35,9 @@ def plot_training_log():
    # Change the x-axis and y-axis ticks and labels.
    plt.ylim(min(min(val_accuracy), min(accuracy), min(val_loss) - 0.10, min(loss)),
             min(max(max(val_accuracy), max(accuracy), max(val_loss), max(loss)) + 0.10, 1))
-   plt.xlim(1, len(accuracy) + 1)
-   plt.xticks([i for i in range(0, len(accuracy) + 1, 1)])
-   plt.xlabel('Epoch')
+   plt.xlim(1, len(accuracy))
+   plt.xticks([i for i in range(0, len(accuracy) + 1, 1)], fontsize = 12)
+   plt.xlabel('Epoch', fontsize = 15)
 
    # Format the graph.
    plt.axhline(y = 0, color = 'black', linewidth = 1.3, alpha = 0.7)
