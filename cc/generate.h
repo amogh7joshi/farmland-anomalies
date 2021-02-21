@@ -65,10 +65,8 @@ extern inline std::vector<std::string> list_directory_files(const char* path)
     DIR *dir;
     struct dirent *ent;
 
-    if ((dir = opendir(path)) != nullptr)
-    {
-        while ((ent = readdir(dir)) != nullptr)
-        {
+    if ((dir = opendir(path)) != nullptr) {
+        while ((ent = readdir(dir)) != nullptr) {
             const char *fp_short = ent->d_name;
             std::string fp = std::string(path) + "/" + std::string(fp_short);
 
@@ -82,8 +80,7 @@ extern inline std::vector<std::string> list_directory_files(const char* path)
         }
         closedir(dir);
     }
-    else
-    {
+    else {
         const char* msg = "Error while trying to iterate over files in provided directory";
         perror(msg);
     }
