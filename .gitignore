@@ -18,3 +18,4 @@ cc/cc
 cc/CMakeCache.txt
 cc/CMakeFiles
 cc/cmake-build-debug
+cc/Makefile
