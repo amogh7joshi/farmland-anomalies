@@ -12,3 +12,9 @@ data/models/
 images/
 logs/
 preprocessing/convert.py
+cc/*.cbp
+cc/cc
+**/*.cmake
+cc/CMakeCache.txt
+cc/CMakeFiles
+cc/cmake-build-debug
