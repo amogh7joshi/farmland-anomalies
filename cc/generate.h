@@ -6,14 +6,18 @@
 #define CC_GENERATE_H
 
 #include <iostream>
+#include <stdexcept>
 #include <cassert>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include <dirent.h>
 #include <filesystem>
 #include <fstream>
 #include <sys/stat.h>
+
+#include <nlohmann/json.hpp>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
@@ -32,14 +36,10 @@ extern inline bool path_exists(const char* path) {
         return false;
     }
 
-    // Define the path directory pointer beforehand.
-    DIR *pathDir;
-
-    if ((pathDir = opendir(path)) != nullptr) {
-        (void) closedir(pathDir);
+    // Determine if path exists in the filesystem.
+    std::__fs::filesystem::path fs_path = std::__fs::filesystem::path (path);
+    if (std::__fs::filesystem::exists(fs_path))
         return true;
-    }
-
     return false;
 }
 
@@ -49,10 +49,10 @@ extern inline char* path_to_string(const std::__fs::filesystem::path& path)
      * Converts a std::filesystem path to a string.
      * @param path: The provided std::filesystem path.
      */
-    return const_cast<char *>(path.string().c_str());
+    return const_cast<char *>(path.c_str());
 }
 
-extern inline std::vector<std::string> list_directory_paths(const char* path)
+extern inline std::vector<std::string> list_directory_files(const char* path)
 {
     /**
      * Get a list of paths within the provided directory path.
