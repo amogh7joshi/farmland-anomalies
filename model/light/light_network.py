@@ -114,155 +114,147 @@ def light_model_v2(input_shape = (512, 512, 4), classes = 8):
    input = Input(input_shape)
 
    # First Encoder stage 1.
-   enc = Conv2D(256, kernel_size=(3, 3), activation='relu', padding='same',
-                kernel_initializer='he_normal')(input)
+   enc = Conv2D(128, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                kernel_initializer = 'he_normal', strides = (2, 2))(input)
    enc = BatchNormalization()(enc)
-   enc = MaxPooling2D(pool_size=(2, 2), padding='same')(enc)
 
    # First Encoder stage 2.
-   enc = Conv2D(128, kernel_size=(3, 3), activation='relu', padding='same',
-                kernel_initializer='he_normal')(enc)
+   enc = Conv2D(64, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                kernel_initializer = 'he_normal', strides = (2, 2))(enc)
    enc = BatchNormalization()(enc)
-   enc = MaxPooling2D(pool_size=(2, 2), padding='same')(enc)
 
    # First Encoder stage 3.
-   enc = Conv2D(64, kernel_size=(3, 3), activation='relu', padding='same',
-                kernel_initializer='he_normal')(enc)
+   enc = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                kernel_initializer = 'he_normal', strides = (2, 2))(enc)
    enc = BatchNormalization()(enc)
-   enc = MaxPooling2D(pool_size=(2, 2), padding='same')(enc)
 
    # First Encoder stage 4.
-   enc = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                kernel_initializer='he_normal')(enc)
+   enc = Conv2D(16, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                kernel_initializer = 'he_normal', strides = (2, 2))(enc)
    enc = BatchNormalization()(enc)
-   enc = MaxPooling2D(pool_size=(2, 2), padding='same')(enc)
 
    # Second Encoder stage 1.
-   enc2 = SeparableConv2D(256, kernel_size=(3, 3), activation='relu', padding='same',
-                          kernel_initializer='he_normal')(input)
+   enc2 = SeparableConv2D(128, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                          kernel_initializer = 'he_normal', strides = (2, 2))(input)
    enc2 = BatchNormalization()(enc2)
-   enc2 = AveragePooling2D(pool_size=(2, 2), padding='same')(enc2)
 
    # Second Encoder stage 2.
-   enc2 = SeparableConv2D(128, kernel_size=(3, 3), activation='relu', padding='same',
-                          kernel_initializer='he_normal')(enc2)
+   enc2 = SeparableConv2D(64, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                          kernel_initializer = 'he_normal', strides = (2, 2))(enc2)
    enc2 = BatchNormalization()(enc2)
-   enc2 = AveragePooling2D(pool_size=(2, 2), padding='same')(enc2)
 
    # Second Encoder stage 3.
-   enc2 = SeparableConv2D(64, kernel_size=(3, 3), activation='relu', padding='same',
-                          kernel_initializer='he_normal')(enc2)
+   enc2 = SeparableConv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                          kernel_initializer = 'he_normal', strides = (2, 2))(enc2)
    enc2 = BatchNormalization()(enc2)
-   enc2 = AveragePooling2D(pool_size=(2, 2), padding='same')(enc2)
 
    # Second Encoder stage 4.
-   enc2 = SeparableConv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                          kernel_initializer='he_normal')(enc2)
+   enc2 = SeparableConv2D(16, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                          kernel_initializer = 'he_normal', strides = (2, 2))(enc2)
    enc2 = BatchNormalization()(enc2)
-   enc2 = AveragePooling2D(pool_size=(2, 2), padding='same')(enc2)
 
    # Concatenate encoders into a single output.
    encoder_output = Concatenate()([enc, enc2])
 
    # Decoder stage 1.
-   dec_branch_1 = Conv2D(32, kernel_size=(5, 5), activation='relu', padding='same',
-                         kernel_initializer='he_normal')(encoder_output)
-   dec_branch_2 = SeparableConv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                  kernel_initializer='he_normal')(encoder_output)
+   dec_branch_1 = Conv2D(32, kernel_size = (5, 5), activation = 'relu', padding = 'same',
+                         kernel_initializer = 'he_normal')(encoder_output)
+   dec_branch_2 = SeparableConv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                  kernel_initializer = 'he_normal')(encoder_output)
    dec = Add()([dec_branch_1, dec_branch_2])
-   dec = UpSampling2D(size=(2, 2))(dec)
+   dec = UpSampling2D(size = (2, 2))(dec)
 
    # Decoder stage 2.
-   dec_branch_1 = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                         kernel_initializer='he_normal')(dec)
-   dec_branch_2 = SeparableConv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                  kernel_initializer='he_normal')(dec)
+   dec_branch_1 = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                         kernel_initializer = 'he_normal')(dec)
+   dec_branch_2 = SeparableConv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                  kernel_initializer = 'he_normal')(dec)
    dec = Add()([dec_branch_1, dec_branch_2])
    dec = BatchNormalization()(dec)
-   dec = UpSampling2D(size=(2, 2))(dec)
+   dec = UpSampling2D(size = (2, 2))(dec)
 
    # Decoder Stage 3.
-   dec_branch_1 = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                         kernel_initializer='he_normal')(dec)
-   dec_branch_2 = SeparableConv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                  kernel_initializer='he_normal')(dec)
+   dec_branch_1 = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                         kernel_initializer = 'he_normal')(dec)
+   dec_branch_2 = SeparableConv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                  kernel_initializer = 'he_normal')(dec)
    dec = Add()([dec_branch_1, dec_branch_2])
    dec = BatchNormalization()(dec)
-   dec = UpSampling2D(size=(2, 2))(dec)
+   dec = UpSampling2D(size = (2, 2))(dec)
 
    # Decoder Stage 4.
-   dec_branch_1 = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                         kernel_initializer='he_normal')(dec)
-   dec_branch_2 = SeparableConv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                  kernel_initializer='he_normal')(dec)
+   dec_branch_1 = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                         kernel_initializer = 'he_normal')(dec)
+   dec_branch_2 = SeparableConv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                  kernel_initializer = 'he_normal')(dec)
    dec = Add()([dec_branch_1, dec_branch_2])
    dec = BatchNormalization()(dec)
-   decoder_output = UpSampling2D(size=(2, 2))(dec)
+   decoder_output = UpSampling2D(size = (2, 2))(dec)
 
    # Mini-encoder-decoder to learn higher-level features.
    # MIni-encoder-decoder encoding branch 1.
-   mini_model_branch1 = DepthwiseConv2D(kernel_size=(3, 3), activation='relu', padding='same',
-                                        kernel_initializer='he_normal')(input)
-   mini_model_branch1 = Conv2D(128, kernel_size=(1, 1), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(mini_model_branch1)
+   mini_model_branch1 = DepthwiseConv2D(kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                        kernel_initializer = 'he_normal')(input)
+   mini_model_branch1 = Conv2D(128, kernel_size = (1, 1), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(mini_model_branch1)
    mini_model_branch1 = BatchNormalization()(mini_model_branch1)
-   mini_model_branch1 = MaxPooling2D(pool_size=(2, 2))(mini_model_branch1)
+   mini_model_branch1 = MaxPooling2D(pool_size = (2, 2))(mini_model_branch1)
 
-   mini_model_branch1 = DepthwiseConv2D(kernel_size=(3, 3), activation='relu', padding='same',
-                                        kernel_initializer='he_normal')(mini_model_branch1)
-   mini_model_branch1 = Conv2D(64, kernel_size=(1, 1), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(mini_model_branch1)
+   mini_model_branch1 = DepthwiseConv2D(kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                        kernel_initializer = 'he_normal')(mini_model_branch1)
+   mini_model_branch1 = Conv2D(64, kernel_size = (1, 1), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(mini_model_branch1)
    mini_model_branch1 = BatchNormalization()(mini_model_branch1)
-   mini_model_branch1 = MaxPooling2D(pool_size=(2, 2))(mini_model_branch1)
+   mini_model_branch1 = MaxPooling2D(pool_size = (2, 2))(mini_model_branch1)
 
-   mini_model_branch1 = DepthwiseConv2D(kernel_size=(3, 3), activation='relu', padding='same',
-                                        kernel_initializer='he_normal')(mini_model_branch1)
-   mini_model_branch1 = Conv2D(16, kernel_size=(1, 1), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(mini_model_branch1)
+   mini_model_branch1 = DepthwiseConv2D(kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                        kernel_initializer = 'he_normal')(mini_model_branch1)
+   mini_model_branch1 = Conv2D(16, kernel_size = (1, 1), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(mini_model_branch1)
    mini_model_branch1 = BatchNormalization()(mini_model_branch1)
-   mini_model_branch1 = MaxPooling2D(pool_size=(2, 2))(mini_model_branch1)
+   mini_model_branch1 = MaxPooling2D(pool_size = (2, 2))(mini_model_branch1)
 
    # Mini encoder-decoder encoding branch 2.
-   mini_model_branch2 = Conv2D(128, kernel_size=(3, 3), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(input)
+   mini_model_branch2 = Conv2D(128, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(input)
    mini_model_branch2 = BatchNormalization()(mini_model_branch2)
-   mini_model_branch2 = AveragePooling2D(pool_size=(2, 2))(mini_model_branch2)
+   mini_model_branch2 = AveragePooling2D(pool_size = (2, 2))(mini_model_branch2)
 
-   mini_model_branch2 = Conv2D(64, kernel_size=(3, 3), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(mini_model_branch2)
+   mini_model_branch2 = Conv2D(64, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(mini_model_branch2)
    mini_model_branch2 = BatchNormalization()(mini_model_branch2)
-   mini_model_branch2 = AveragePooling2D(pool_size=(2, 2))(mini_model_branch2)
+   mini_model_branch2 = AveragePooling2D(pool_size = (2, 2))(mini_model_branch2)
 
-   mini_model_branch2 = Conv2D(16, kernel_size=(3, 3), activation='relu', padding='same',
-                               kernel_initializer='he_normal')(mini_model_branch2)
+   mini_model_branch2 = Conv2D(16, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                               kernel_initializer = 'he_normal')(mini_model_branch2)
    mini_model_branch2 = BatchNormalization()(mini_model_branch2)
-   mini_model_branch2 = AveragePooling2D(pool_size=(2, 2))(mini_model_branch2)
+   mini_model_branch2 = AveragePooling2D(pool_size = (2, 2))(mini_model_branch2)
 
    # Concatenate encoding branches.
    mini_model_encoding = Concatenate()([mini_model_branch1, mini_model_branch2])
 
    # Mini encoder-decoder decoder segment.
-   mini_model_decoding = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                kernel_initializer='he_normal')(mini_model_encoding)
+   mini_model_decoding = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                kernel_initializer = 'he_normal')(mini_model_encoding)
    mini_model_decoding = BatchNormalization()(mini_model_decoding)
-   mini_model_decoding = UpSampling2D(size=(2, 2))(mini_model_decoding)
+   mini_model_decoding = UpSampling2D(size = (2, 2))(mini_model_decoding)
 
-   mini_model_decoding = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                kernel_initializer='he_normal')(mini_model_decoding)
+   mini_model_decoding = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                kernel_initializer = 'he_normal')(mini_model_decoding)
    mini_model_decoding = BatchNormalization()(mini_model_decoding)
-   mini_model_decoding = UpSampling2D(size=(2, 2))(mini_model_decoding)
+   mini_model_decoding = UpSampling2D(size = (2, 2))(mini_model_decoding)
 
-   mini_model_decoding = Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same',
-                                kernel_initializer='he_normal')(mini_model_decoding)
+   mini_model_decoding = Conv2D(32, kernel_size = (3, 3), activation = 'relu', padding = 'same',
+                                kernel_initializer = 'he_normal')(mini_model_decoding)
    mini_model_decoding = BatchNormalization()(mini_model_decoding)
-   mini_model_decoding = UpSampling2D(size=(2, 2))(mini_model_decoding)
+   mini_model_decoding = UpSampling2D(size = (2, 2))(mini_model_decoding)
 
    # Concatenate primary model and mini-model.
    decoder_output = Add()([mini_model_decoding, decoder_output])
 
    # Model output stage.
-   output = Conv2D(classes, kernel_size=(3, 3), activation='sigmoid', padding='same',
-                   kernel_initializer='he_normal')(decoder_output)
+   output = Conv2D(classes, kernel_size = (3, 3), activation = 'sigmoid', padding = 'same',
+                   kernel_initializer = 'he_normal')(decoder_output)
 
    return Model(input, output)
 
