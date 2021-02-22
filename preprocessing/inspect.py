@@ -17,6 +17,8 @@ import matplotlib.gridspec as gspec
 
 from PIL import Image
 
+from preprocessing.dataset import AgricultureVisionDataset
+
 def get_classes_dict(dataset_dir):
    """Get a dictionary of classes for the Agriculture-Vision dataset."""
    class_dict = {0: 'background'}; count = 1
@@ -138,6 +140,8 @@ def show_random_general_images(num_imgs, image_ids, paths_list, background = "li
    fig, axes = plt.subplots(num_imgs, len(images[0]), figsize = (20, 16))
    if background == "dark":
       fig.patch.set_facecolor('#2e3037ff')
+   elif background == 'light':
+      fig.patch.set_facecolor('#efefefff')
    gs1 = gspec.GridSpec(num_imgs, len(images[0]))
    gs1.update(wspace = 0.1, hspace = 0.025)
    for indx in range(num_imgs * len(images[0])):
@@ -181,18 +185,89 @@ def show_random_general_images(num_imgs, image_ids, paths_list, background = "li
          os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images'))
       savefig.savefig(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', 'inspected-general.png'))
 
+def show_images_for_id(mode, id, background = 'light'):
+   """Displays all images associated with a certain image ID, itself associated with a data mode."""
+   global complete_paths
+   if mode == 'train':
+      paths = train_data_paths
+   elif mode == 'val':
+      paths = val_data_paths
+   elif mode == 'test':
+      paths = test_data_paths
+   else:
+      raise ValueError(f"Received invalid mode {mode}, was expecting train, val, or test.")
+
+   # Get the image paths.
+   images = None
+   for item in paths:
+      if item['id'] == id:
+         images = list(map(lambda img: all_image_info(id, complete_paths), id))
+   try:
+      iter(images)
+   except Exception as e:
+      raise e
+
+   # Plot image data.
+   order = list(images[0].keys())
+   fig, axes = plt.subplots(1, len(images[0]), figsize = (20, 16))
+   if background == "dark":
+      fig.patch.set_facecolor('#2e3037ff')
+   elif background == "light":
+      fig.patch.set_facecolor('#efefefff')
+   gs1 = gspec.GridSpec(1, len(images[0]))
+   gs1.update(wspace = 0.1, hspace = 0.025)
+   for indx in range(len(images[0])):
+      # Get the ax from the gridspec object.
+      ax = plt.subplot(gs1[indx])
+      ax.set_aspect('equal')
+
+      image_type = order[indx % len(images[0])]
+      if image_type.find('label') != -1:
+         image_type_title = image_type[6:]
+      else:
+         image_type_title = image_type
+      if indx // 10 == 0:
+         # Replace image title.
+         if image_type_title in ['rgb', 'nir']:
+            image_type_title = image_type_title.upper()
+         else:
+            image_type_title = image_type_title.title()
+
+         # Set the title.
+         if background == "dark":
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 15, color = 'w')
+         else:
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 15, color = 'k')
+
+      # Display the image, with channels reversed.
+      ax.imshow(images[indx // 10][image_type], vmin = 0, vmax = 255, cmap = 'magma')
+
+      # Turn off axis.
+      ax.axis('off')
+
+   # Display the image.
+   savefig = plt.gcf()
+   plt.show()
+
 if __name__ == '__main__':
    # Construct and parse command line arguments.
    ap = argparse.ArgumentParser()
    ap.add_argument('--directory', default = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Agriculture-Vision'),
                    help = 'The directory path to the dataset, default is ../data/Agriculture-Vision.')
    ap.add_argument('--save', default = False, action = 'store_true', help = 'Pass to save inspected images to a figure image file..')
-   ap.add_argument('--mode', default = 'general', help = 'Which mode, either random [general] images or random [specific] images.')
+   ap.add_argument('--mode', default = 'id', help = 'Which mode, either random [general] images, random [specific] images, or an image [id].')
+   ap.add_argument('--id', default = None, help = 'If displaying an image ID, then provide the image ID.')
    args = ap.parse_args()
 
    # Define global values.
-   train_data_path = None; val_data_path = None; test_data_path = None; complete_paths = None
+   train_data_paths = []; val_data_paths = []; test_data_paths = []; complete_paths = []
    load_json_files(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Dataset'))
+
+   # Construct a dataset for overwriting.
+   dataset = AgricultureVisionDataset()
+   dataset.construct()
 
    # Perform inspection.
    image_files = get_image_names('train', args.directory)
@@ -201,6 +276,8 @@ if __name__ == '__main__':
       show_random_specific_images((16, 10), image_files, 'boundary', complete_paths, args.save)
    elif args.mode == 'general':
       show_random_general_images(4, image_files, complete_paths, args.save)
+   elif args.mode == 'id':
+      show_images_for_id('val', dataset.image_ids['val'][4])
    else:
       raise ValueError("You have provided an invalid mode, should be [random] or [general].")
 
