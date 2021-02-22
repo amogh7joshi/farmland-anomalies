@@ -8,3 +8,4 @@ tensorflow_datasets
 matplotlib
 keras
 pillow
+deeptoolkit
