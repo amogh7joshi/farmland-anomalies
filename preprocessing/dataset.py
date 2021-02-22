@@ -367,6 +367,9 @@ class AgricultureVisionDataset(object):
       self._numpy_conversion = False
       self.constructed = False
 
+      # Track image IDs.
+      self.image_ids = {}
+
       # Set default class list.
       self._class_list = ['Background', 'Waterway', 'Standing Water', 'Weed Cluster',
                           'Double Plant', 'Planter Skip', 'Cloud Shadow', 'Invalid Pixels']
@@ -400,11 +403,13 @@ class AgricultureVisionDataset(object):
             cls_dataset = cls.create()
             complete_data.append(cls_dataset)
             setattr(AgricultureVisionDataset, property_name, cls_dataset)
+            self.image_ids[dtype] = cls.image_ids
          return complete_data
       else:
          cls = _AgricultureVisionWrapper(self.dtype, self.augmentation, self.dataset_location, self.processed_paths)
          cls_attr = getattr(cls, f'{self.dtype}_data')
          setattr(AgricultureVisionDataset, f'{self.dtype}_data', cls_attr)
+         self.image_ids[self.dtype] = cls.image_ids
          return cls_attr
 
    def as_numpy(self):
