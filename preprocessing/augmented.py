@@ -60,6 +60,8 @@ def plot_augmented_single_example_images(num = 0, background = "light"):
       fig, axes = plt.subplots(1, 9, figsize = (20, 5))
       if background == "dark":
          fig.patch.set_facecolor('#2e3037ff')
+      elif background == 'light':
+         fig.patch.set_facecolor('#efefefff')
       for i, ax in enumerate(axes.flat):
          # Turn off axis.
          ax.axis('off')
