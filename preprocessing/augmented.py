@@ -2,6 +2,7 @@
 # -*- coding = utf-8 -*-
 import os
 import sys
+import argparse
 
 import numpy as np
 from matplotlib import style
@@ -76,8 +77,8 @@ def plot_augmented_single_example_images(num = 0, background = "light"):
             image_type_title = 'Background'
          # Plot the label images.
          elif i in list(range(2, 8)):
-            ax.imshow(label_images[i - 3], cmap = 'gray')
-            image_type_title = get_classes_dict('../data/Agriculture-Vision')[i - 2].title()
+            ax.imshow(label_images[i - 2], cmap = 'gray')
+            image_type_title = get_classes_dict('../data/Agriculture-Vision')[i - 1].title()
          # Plot the invalid pixels.
          elif i == 8:
             ax.imshow(invalid_pixels, cmap = 'gray')
@@ -93,6 +94,13 @@ def plot_augmented_single_example_images(num = 0, background = "light"):
 
       # Display plot.
       plt.show()
-   
-plot_augmented_single_example_images()
+
+if __name__ == '__main__':
+   # Parse command line arguments.
+   ap = argparse.ArgumentParser()
+   ap.add_argument('-v', '--val', default = 0, help = "The value of the image that you want to display.")
+   args = ap.parse_args()
+
+   # Run the main method.
+   plot_augmented_single_example_images(args.val)
 
