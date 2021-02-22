@@ -123,7 +123,7 @@ def show_random_specific_images(size, image_ids, image_types, paths_list, save =
          os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images'))
       savefig.savefig(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'images', 'inspected-specific.png'))
 
-def show_random_general_images(num_imgs, image_ids, paths_list, save = False):
+def show_random_general_images(num_imgs, image_ids, paths_list, background = "light", save = False):
    """Choose and display all images corresponding to a random selection of image IDs."""
    assert 1 <= num_imgs < 10, f"Number of images should be in range (4, 10), got {num_imgs}."
 
@@ -136,7 +136,8 @@ def show_random_general_images(num_imgs, image_ids, paths_list, save = False):
    # Plot image data.
    order = list(images[0].keys())
    fig, axes = plt.subplots(num_imgs, len(images[0]), figsize = (20, 16))
-   fig.patch.set_facecolor('#2e3037ff')
+   if background == "dark":
+      fig.patch.set_facecolor('#2e3037ff')
    gs1 = gspec.GridSpec(num_imgs, len(images[0]))
    gs1.update(wspace = 0.1, hspace = 0.025)
    for indx in range(num_imgs * len(images[0])):
@@ -157,8 +158,12 @@ def show_random_general_images(num_imgs, image_ids, paths_list, save = False):
             image_type_title = image_type_title.title()
 
          # Set the title.
-         ax.set_title(image_type_title.replace('_', ' '),
-                      fontsize = 15, color = 'w')
+         if background == "dark":
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 15, color = 'w')
+         else:
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 15, color = 'k')
 
       # Display the image, with channels reversed.
       ax.imshow(images[indx // 10][image_type], vmin = 0, vmax = 255, cmap = 'magma')
@@ -181,7 +186,7 @@ if __name__ == '__main__':
    ap = argparse.ArgumentParser()
    ap.add_argument('--directory', default = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Agriculture-Vision'),
                    help = 'The directory path to the dataset, default is ../data/Agriculture-Vision.')
-   ap.add_argument('--save', default = True, action = 'store_true', help = 'Pass to save inspected images to a figure image file..')
+   ap.add_argument('--save', default = False, action = 'store_true', help = 'Pass to save inspected images to a figure image file..')
    ap.add_argument('--mode', default = 'general', help = 'Which mode, either random [general] images or random [specific] images.')
    args = ap.parse_args()
 

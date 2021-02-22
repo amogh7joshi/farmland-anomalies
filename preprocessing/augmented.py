@@ -28,7 +28,7 @@ def get_classes_dict(dataset_dir):
       count += 1
    return class_dict
 
-def plot_augmented_single_example_images(num = 0):
+def plot_augmented_single_example_images(num = 0, background = "light"):
    """Plots a single row of augmented images from the dataset."""
    # Get the first item of the dataset.
    for indx, item in enumerate(iter(dataset.evaluation_dataset(1))):
@@ -57,8 +57,9 @@ def plot_augmented_single_example_images(num = 0):
       invalid_pixels = label[:, :, 7]
 
       # Create the figure.
-      fig, axes = plt.subplots(1, 10, figsize = (20, 16))
-      fig.patch.set_facecolor('#2e3037ff')
+      fig, axes = plt.subplots(1, 9, figsize = (20, 5))
+      if background == "dark":
+         fig.patch.set_facecolor('#2e3037ff')
       for i, ax in enumerate(axes.flat):
          # Turn off axis.
          ax.axis('off')
@@ -69,24 +70,24 @@ def plot_augmented_single_example_images(num = 0):
             image_type_title = 'RGB'
          # Plot the NIR image.
          elif i == 1:
-            ax.imshow(nir_image, cmap = 'magma')
-            image_type_title = 'NIR'
-         # Plot the background image.
-         elif i == 2:
             ax.imshow(background_image, cmap = 'gray')
             image_type_title = 'Background'
          # Plot the label images.
-         elif i in list(range(3, 9)):
+         elif i in list(range(2, 8)):
             ax.imshow(label_images[i - 3], cmap = 'gray')
             image_type_title = get_classes_dict('../data/Agriculture-Vision')[i - 2].title()
          # Plot the invalid pixels.
-         elif i == 9:
+         elif i == 8:
             ax.imshow(invalid_pixels, cmap = 'gray')
             image_type_title = 'Invalid Pixels'
 
          # Set title.
-         ax.set_title(image_type_title.replace('_', ' '),
-                      fontsize = 15, color = 'w')
+         if background == "dark":
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 16, color = 'w')
+         else:
+            ax.set_title(image_type_title.replace('_', ' '),
+                         fontsize = 16, color = 'k')
 
       # Display plot.
       plt.show()
