@@ -1,12 +1,26 @@
 # Crop Field Health
 
-![example](examples/evaluated-8.png)
+![example](examples/evaluated-o1-21.png)
 
-This project aims to assist large-scale agriculture using neural networks to conduct image segmentation to detect anomalies in crop fields,
+## Background
+
+There are over 400 million acres of farmland in the United States, which traditionally must be monitored on foot to detect anomalies, an extensively time-consuming task. 
+A farmland anomaly is any object, region, or event that disrupts the normal growth stages of crops, which if left unchecked, can drastically decrease the yield of a farm.
+
+Some of the most harmful farmland anomalies to potential crop yield are:
+- **clusters of weeds**, which inhibit crop growth and nutrient gains,
+- **stagnant water**, which can serve as a breeding ground for harmful bacteria and pests,
+- **unintended waterways**, which can destroy plants in their paths, and 
+- **missed** or **double planting**, which prevents maximum planting efficiency.
+
+I have used deep neural networks to conduct semantic image segmentation on aerial images of farmland, to classify and determine the 
+locations of these anomalies
 such as weed clusters, skipped planting, and water destruction. Considering the expansiveness of global crop fields,
 it is near-impossible to patrol crop fields on foot and resource-consuming and often largely expensive to try and have 
-humans analyze aerial images using existing technologies. This project simplifies existing solutions and provides an 
-speed and cost-efficient solution for analyzing images.
+humans analyze aerial images using existing technologies. 
+
+This project simplifies existing solutions and provides an 
+accurate and efficient solution for analyzing agricultural images, a relatively untouched field.
 
 ## Structure 
 
@@ -26,7 +40,9 @@ You can install the repository from the command line:
 git clone https://github.com/amogh7joshi/crop-field-health.git
 ```
 
-A Makefile is included for installation. To use it, run the following.
+### Python Setup
+
+A Makefile is included for Python installation. To use it, run the following.
 
 ```shell script
 make install
@@ -38,28 +54,29 @@ Otherwise, in the proper directory, execute the following to install system requ
 python3 -m pip install -r requirements.txt
 ```
 
-Once you have acquired the compressed dataset, place it in the `data/` directory and execute the 
-`expand.sh` script. To process the dataset, then run the `preprocess.sh` script. After that, the dataset can be 
-imported by calling:
+From here, the `scripts/expand.sh` script inflates the dataset into its permanent file structure, and 
+the `scripts/preprocess.sh` processes the dataset into JSON files containing image paths for each image ID.
 
-```python
-from preprocessing.dataset import AgricultureVisionDataset
+### C++ Setup
+
+If you want to work with the C++ extensions of the project, which are located in the `cc` directory, then 
+follow the above steps for repository installation and Python setup. 
+
+From there, you need to build the C++ project. You will need CMake installed, as well as 
+[OpenCV](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) (for working with images) 
+and [nlohmann-json](https://github.com/nlohmann/json#package-managers) (for working with JSON files). Once you have those
+installed, execute:
+
+```shell script
+cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" path/to/farmland-anomalies/cc
 ```
 
-You can work with it as follows:
+You can run the compiled C++ files from there, by running `make` in the `cc` directory to build the files and then:
 
-```python
-dataset = AgricultureVisionDataset()
-dataset.construct()
-
-# Access dataset attributes.
-dataset.train_data # Training Data.
-dataset.val_data # Val Data.
-dataset.test_data # Test Data.
-
-# Convert dataset from tensors to numpy arrays.
-dataset.as_numpy()
+```shell script
+./cc
 ```
+
 
 ## Agriculture-Vision Dataset
 
