@@ -2,12 +2,13 @@
 # -*- coding = utf-8 -*-
 import os
 
+import cv2
+import numpy as np
 import tensorflow as tf
 
 from testing.process import preprocess_image
 from preprocessing.dataset import AgricultureVisionDataset
 
-# Load a testing image.
 def get_testing_image(mode, value = None):
    """Load a testing image, either from a provided image path or from a dataset."""
    if mode and value is None:
@@ -50,3 +51,8 @@ def get_testing_image(mode, value = None):
 
    # For some reason, if nothing has been returned, then throw an error.
    raise Exception("Nothing was returned, something must be broken.")
+
+def create_displayable_test_output(test_image):
+   """Processes an (already post-processed) test image to a displayable format."""
+   return cv2.cvtColor(np.squeeze(test_image)[:, :, 3], cv2.COLOR_BGR2RGB)
+
