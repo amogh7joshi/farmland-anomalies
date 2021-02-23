@@ -22,16 +22,6 @@ humans analyze aerial images using existing technologies.
 This project simplifies existing solutions and provides an 
 accurate and efficient solution for analyzing agricultural images, a relatively untouched field.
 
-## Structure 
-
-The data pipelines and system is developed in multiple stages, owing to the complexity of the Agriculture-Vision dataset (see below).
-First, the dataset is inflated from its compressed files using the `scripts/expand.sh` script. Then, the `scripts/generate.sh` calls the
-`preprocessing/generate.py` script, which creates JSON files containing all image paths for a unique image ID. Finally, the `preprocessing/dataset.py`
-file contains the `AgricultureVisionDataset` object which is called from implementation scripts as training data.
-
-For data inspection, including viewing all images associated with an ID or viewing all images belonging to a category, the `preprocessing/inspect.py`
-contains functionality for viewing and saving these images.
-
 ## Usage
 
 You can install the repository from the command line:
@@ -77,11 +67,22 @@ You can run the compiled C++ executables from there, by running `make` in the `c
 ./cc
 ```
 
+## Data Gathering and Preprocessing
 
-## Agriculture-Vision Dataset
+The data pipelines and system is developed in multiple stages, owing to the complexity of the Agriculture-Vision dataset (see below).
+First, the dataset is inflated from its compressed files using the `scripts/expand.sh` script. Then, the `scripts/generate.sh` calls the
+`preprocessing/generate.py` script, which creates JSON files containing all image paths for a unique image ID. (This can also be done using 
+the optimized C++ extension in the `cc` directory, see the below C++ installation section for more information) Finally, the `preprocessing/dataset.py`
+file contains the `AgricultureVisionDataset` object which is called from implementation scripts as training data.
 
-This project makes use of the Agriculture-Vision dataset, containing aerial crop field images from multiple classes.
-The dataset can be requested from the challenge [website](https://www.agriculture-vision.com/contact-us), and for compatibility
+For data inspection, including viewing all images associated with an ID, viewing all images belonging to a category, or viewing all images related to a 
+certain ID, the `preprocessing/inspect.py` contains functionality for viewing and saving these images. The other files in the `preprocessing` directory contain 
+individual purpose implementations (e.g., `preprocessing/distribution.py` plots the class distribution frequency of the dataset).
+
+### Agriculture-Vision Dataset
+
+This project makes use of the Agriculture-Vision dataset, containing aerial farmland images with one or multiple different anomaly segmentation masks.
+Information about the dataset and its acquisition can be found at the [challenge website](https://www.agriculture-vision.com/contact-us), and for compatibility
 the compressed file should be placed in the `data` directory.
 
 ```bibtex
@@ -94,5 +95,45 @@ the compressed file should be placed in the `data` directory.
          year={2020}
 }
 ```
+
+## Model Information
+
+There were three main deep neural network models constructed as part of this project: a semi-shallow single-network model [**L1**](https://github.com/amogh7joshi/farmland-anomalies/blob/master/model/light/light_network.py#L15),
+ the deepest model, titled [**D1**](model/complex/architecture.py), and the successfully implemented model [**L2**](https://github.com/amogh7joshi/farmland-anomalies/blob/master/model/light/light_network.py#L112).
+ 
+### Architecture
+
+![architecture-l2](examples/architecture-l2.png)
+
+Model **L2** (diagram generated using [Net2Vis](https://github.com/viscom-ulm/Net2Vis)) uses **Ensemble Learning** techniques, with two "sub-networks":
+
+1. The top (and shallower) network, **L2-1**, which learns high-level image features.
+2. The bottom (and deeper) network, **L2-2**, which learns deep spatial relations and features.
+
+**L2-2** uses strided convolutions to pick up on features generally lost during downsampling, while **L2-1** uses pooling layers, 
+to prevent gradient propagation issues which may arise. 
+
+For specific details on the network architectures, see the [model](https://github.com/amogh7joshi/farmland-anomalies/tree/master/model) directory.
+
+### Losses
+
+To refine segmentation masks, multiple loss functions were used on a single loss instance. For example, a model was trained on an arbitrary loss *A* for 20 epochs,
+then loss *B* for 20 more epochs, and finally loss *C* for 20 final epochs.
+
+Primarily, dice loss and cross-entropy loss was used, however a third loss function titled **surface-channel** loss was developed, with the formula:
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{300}&space;\bg_white&space;\large&space;\mathrm{SCL}&space;=&space;\max\limits_{i\,\in\,&space;C}\displaystyle\iint_{I_i}||M(p)&space;-&space;p_T||^2&space;\,\mathrm{dA}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\dpi{300}&space;\bg_white&space;\large&space;\mathrm{SCL}&space;=&space;\max\limits_{i\,\in\,&space;C}\displaystyle\iint_{I_i}||M(p)&space;-&space;p_T||^2&space;\,\mathrm{dA}" title="\large \mathrm{SCL} = \max\limits_{i\,\in\, C}\displaystyle\iint_{I_i}||M(p) - p_T||^2 \,\mathrm{dA}" /></a>
+
+This penalizes incorrect calculations heavily, and focuses on classifications over individual channels, allowing for the refinement of a prediction *as well as* segmentation.
+
+## License and Contributions
+
+![GitHub](https://img.shields.io/github/license/amogh7joshi/farmland-anomalies?logoColor=blue&style=flat-square)
+
+All of the code in this repository is licensed under the MIT License, meaning you are free to work with it as you desire, but
+this repository must be cited if you want to reuse the code. 
+
+Although you are free to work with the project yourself, contributions will not be accepted to this repository. You are, however, welcome
+to open an issue in the issues tab if you notice something that is broken. 
 
 
