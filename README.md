@@ -1,4 +1,4 @@
-# Crop Field Health
+# Farmland Anomaly Detection and Segmentation
 
 ![example](examples/evaluated-o1-21.png)
 
@@ -61,7 +61,7 @@ installed, execute:
 cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" path/to/farmland-anomalies/cc
 ```
 
-You can run the compiled C++ executables from there, by running `make` in the `cc` directory to build the files and then:
+You can run the compiled C++ executables from there, just run `make` in the `cc` directory to build, and then:
 
 ```shell script
 ./cc
@@ -128,7 +128,8 @@ This penalizes incorrect calculations heavily, and focuses on classifications ov
 
 ## License and Contributions
 
-![GitHub](https://img.shields.io/github/license/amogh7joshi/farmland-anomalies?logoColor=blue&style=flat-square)
+![GitHub](https://img.shields.io/github/license/amogh7joshi/farmland-anomalies?logoColor=blue&style=flat-square) 
+![GitHub issues](https://img.shields.io/github/issues/amogh7joshi/farmland-anomalies?style=flat-square)
 
 All of the code in this repository is licensed under the MIT License, meaning you are free to work with it as you desire, but
 this repository must be cited if you want to reuse the code. 
