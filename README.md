@@ -71,7 +71,7 @@ installed, execute:
 cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" path/to/farmland-anomalies/cc
 ```
 
-You can run the compiled C++ files from there, by running `make` in the `cc` directory to build the files and then:
+You can run the compiled C++ executables from there, by running `make` in the `cc` directory to build the files and then:
 
 ```shell script
 ./cc
