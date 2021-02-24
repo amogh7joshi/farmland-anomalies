@@ -24,17 +24,25 @@ model = load_model(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'log
 def draw_segmentation_map(main_image, predictions):
    """Draws the segmentation map onto the main image."""
    # Dictionary of colors.
-   _COLORS = {5: (0, 38, 255), 2: (50, 115, 168), 3: (50, 168, 82),
+   _COLORS = {5: (0, 38, 255), 2: (0, 128, 255), 3: (50, 168, 82),
               1: (234, 255, 0), 0: (13, 255, 174), 4: (200, 123, 201)}
 
    # Convert the main image into a usable "display" image.
-   main_image = np.squeeze(main_image)[:, :, :3]
-   main_image = main_image * (255 / (np.max(main_image, axis=(0, 1))))
+   if len(main_image) >= 4:
+      main_image = np.squeeze(main_image)[:, :, :3]
+   else:
+      main_image = main_image[:, :, :3]
+
+   main_image = main_image * 255
    main_image = main_image.astype(np.uint8)
 
    # Iterate over the actual classes.
    classes = [item for item in predictions[1:-1]]
    for level, label in enumerate(classes):
+      if not np.any(label):
+         # If there is nothing in the label, then there is nothing to do.
+         continue
+
       # Convert the image into a usable "display" image.
       label = np.expand_dims(label, axis = -1)
       label = label * (255 / (np.max(label, axis = (0, 1))))
@@ -53,34 +61,68 @@ def draw_segmentation_map(main_image, predictions):
          overlay = main_image.copy()
          cv2.fillPoly(overlay, pts = [contour], color = color)
 
+         # Convert the label to float32 and bring it to the range of the regular image.
+         label = label.astype(np.float32)
+
          # Draw the filled-in contour onto the main image.
          main_image = cv2.addWeighted(overlay, 0.3, main_image, 0.7, 1.0)
 
          # Draw a line around the contours to enhance them.
          main_image = cv2.polylines(main_image, pts = [contour], isClosed = True, color = color, thickness = 2)
 
-   # Display the image.
-   plt.imshow(main_image)
-   plt.axis('off')
+   # Return the annotated image.
+   return main_image
+
+def display_segmented_pair(testing_image, prediction, truth, background = 'light'):
+   """Displays a segmented pair of images (the prediction and the ground truth)."""
+   # Create the figure.
+   fig, axes = plt.subplots(1, 3)
+   if background == "dark":
+      fig.patch.set_facecolor('#2e3037ff')
+   elif background == 'light':
+      fig.patch.set_facecolor('#efefefff')
+
+   # Display each of the images on the plots.
+   images = [testing_image, truth, prediction]
+   for indx, ax in enumerate(axes):
+      # Show the image.
+      ax.imshow(images[indx])
+
+      # Remove the axes and perform a bit of formatting.
+      ax.axis('off')
+      if indx == 0:
+         ax.set_title("Original Image", fontsize = 15)
+      elif indx == 1:
+         ax.set_title("Ground Truth", fontsize = 15)
+      else:
+         ax.set_title("Prediction", fontsize = 15)
+
+   # Display the plot.
+   savefig = plt.gcf()
    plt.show()
 
-   # Save the image.
-   cv2.imwrite('diagram.png', main_image)
-
+   # Save the figure.
+   savefig.savefig("diagram.png")
 
 if __name__ == '__main__':
    # Load the image data.
-   test_image = get_testing_image('eval', 7)
+   test_image, test_label = get_testing_image('train', 36, with_truth = True)
 
-   # Make predictions on the test image and postprocess it.
+   # Make predictions on the test image and postprocess the data..
    predicted = model.predict(test_image)
    predicted = postprocess_output(predicted)
 
-   # Convert the test image into a usable image.
+   # Convert the test image/label into usable images.
    displayable_test_image = create_displayable_test_output(test_image)
+   test_label = postprocess_output(test_label)
 
    # Draw the contours onto the main image.
-   draw_segmentation_map(test_image, predicted)
+   annotated_test_prediction = draw_segmentation_map(displayable_test_image.copy(), predicted)
+   annotated_test_truth = draw_segmentation_map(displayable_test_image.copy(), test_label)
+
+   # Display the three images.
+   display_segmented_pair(displayable_test_image, annotated_test_prediction, annotated_test_truth)
+
 
 
 

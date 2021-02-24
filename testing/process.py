@@ -39,4 +39,4 @@ def postprocess_output(prediction):
    """Post-processes a model prediction to a displayable format."""
    prediction = tf.squeeze(prediction)
    prediction = tf.transpose(prediction, [2, 0, 1])
-   return prediction
+   return prediction.numpy()

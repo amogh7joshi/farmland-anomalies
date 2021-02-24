@@ -9,7 +9,7 @@ import tensorflow as tf
 from testing.process import preprocess_image
 from preprocessing.dataset import AgricultureVisionDataset
 
-def get_testing_image(mode, value = None):
+def get_testing_image(mode, value = None, with_truth = False):
    """Load a testing image, either from a provided image path or from a dataset."""
    if mode and value is None:
       # In this case, an image path has been passed.
@@ -39,13 +39,18 @@ def get_testing_image(mode, value = None):
          if indx == value:
             if hasattr(item, "numpy"):
                # Item is just a pure piece of image data (from a test set).
-               return tf.expand_dims(item.numpy()[0], axis = 0)
+               return np.expand_dims(item.numpy()[0], axis = 0)
             elif len(item) == 2:
                # Item is a train/label data (from train/val).
-               return tf.expand_dims(item[0].numpy()[0], axis = 0)
+               if with_truth:
+                  # If we want the image as well as the label.
+                  return np.expand_dims(item[0].numpy()[0], axis = 0), \
+                         np.expand_dims(item[1].numpy()[0], axis = 0)
+               else:
+                  return np.expand_dims(item[0].numpy()[0], axis = 0)
             else:
                # Any other case which has not already been covered.
-               return tf.expand_dims(item[0], axis = 0)
+               return np.expand_dims(item[0].numpy(), axis = 0)
          else:
             continue
 
@@ -54,5 +59,8 @@ def get_testing_image(mode, value = None):
 
 def create_displayable_test_output(test_image):
    """Processes an (already post-processed) test image to a displayable format."""
-   return cv2.cvtColor(np.squeeze(test_image)[:, :, 3], cv2.COLOR_BGR2RGB)
+   if hasattr(test_image, "numpy"):
+      return np.squeeze(test_image.numpy())[:, :, :3]
+   else:
+      return np.squeeze(test_image)[:, :, :3]
 
