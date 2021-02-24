@@ -73,17 +73,23 @@ def draw_segmentation_map(main_image, predictions):
    # Return the annotated image.
    return main_image
 
-def display_segmented_pair(testing_image, prediction, truth, background = 'light'):
+def display_segmented_diagram(testing_image, prediction, truth = None, background = 'light'):
    """Displays a segmented pair of images (the prediction and the ground truth)."""
    # Create the figure.
-   fig, axes = plt.subplots(1, 3)
+   if truth is not None:
+      fig, axes = plt.subplots(1, 3)
+      images = [testing_image, truth, prediction]
+   else:
+      fig, axes = plt.subplots(1, 3)
+      images = [testing_image, prediction]
+
+   # Set the background color.
    if background == "dark":
       fig.patch.set_facecolor('#2e3037ff')
    elif background == 'light':
       fig.patch.set_facecolor('#efefefff')
 
    # Display each of the images on the plots.
-   images = [testing_image, truth, prediction]
    for indx, ax in enumerate(axes):
       # Show the image.
       ax.imshow(images[indx])
@@ -92,10 +98,12 @@ def display_segmented_pair(testing_image, prediction, truth, background = 'light
       ax.axis('off')
       if indx == 0:
          ax.set_title("Original Image", fontsize = 15)
-      elif indx == 1:
-         ax.set_title("Ground Truth", fontsize = 15)
-      else:
+      elif indx == 1 and truth is None:
          ax.set_title("Prediction", fontsize = 15)
+      elif indx == 1 and truth is not None:
+         ax.set_title("Ground Truth", fontsize=15)
+      else:
+         ax.set_title("Ground Truth", fontsize=15)
 
    # Display the plot.
    savefig = plt.gcf()
@@ -121,7 +129,7 @@ if __name__ == '__main__':
    annotated_test_truth = draw_segmentation_map(displayable_test_image.copy(), test_label)
 
    # Display the three images.
-   display_segmented_pair(displayable_test_image, annotated_test_prediction, annotated_test_truth)
+   display_segmented_diagram(displayable_test_image, annotated_test_prediction, annotated_test_truth)
 
 
 
