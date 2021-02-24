@@ -73,7 +73,7 @@ def draw_segmentation_map(main_image, predictions):
    # Return the annotated image.
    return main_image
 
-def display_segmented_diagram(testing_image, prediction, truth = None, background = 'light'):
+def display_segmented_diagram(testing_image, prediction, truth = None, background = 'light', save = False):
    """Displays a segmented pair of images (the prediction and the ground truth)."""
    # Create the figure.
    if truth is not None:
@@ -110,7 +110,8 @@ def display_segmented_diagram(testing_image, prediction, truth = None, backgroun
    plt.show()
 
    # Save the figure.
-   savefig.savefig("diagram.png")
+   if save:
+      savefig.savefig("diagram.png")
 
 if __name__ == '__main__':
    # Load the image data.
