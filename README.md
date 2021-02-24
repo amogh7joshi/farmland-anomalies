@@ -20,7 +20,7 @@ it is near-impossible to patrol crop fields on foot and resource-consuming and o
 humans analyze aerial images using existing technologies. 
 
 This project simplifies existing solutions and provides an 
-accurate and efficient solution for analyzing agricultural images, a relatively untouched field.
+accurate and efficient solution for a problem involving analyzing agricultural images, a relatively untouched field.
 
 ## Usage
 
@@ -117,14 +117,14 @@ For specific details on the network architectures, see the [model](https://githu
 
 ### Losses
 
-To refine segmentation masks, multiple loss functions were used on a single loss instance. For example, a model was trained on an arbitrary loss *A* for 20 epochs,
+To refine segmentation masks, multiple loss functions were used on a single model instance. For example, a model may have been trained on an arbitrary loss *A* for 20 epochs,
 then loss *B* for 20 more epochs, and finally loss *C* for 20 final epochs.
 
 Primarily, dice loss and cross-entropy loss was used, however a third loss function titled **surface-channel** loss was developed, with the formula:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\dpi{300}&space;\bg_white&space;\large&space;\mathrm{SCL}&space;=&space;\max\limits_{i\,\in\,&space;C}\displaystyle\iint_{I_i}||M(p)&space;-&space;p_T||^2&space;\,\mathrm{dA}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\dpi{300}&space;\bg_white&space;\large&space;\mathrm{SCL}&space;=&space;\max\limits_{i\,\in\,&space;C}\displaystyle\iint_{I_i}||M(p)&space;-&space;p_T||^2&space;\,\mathrm{dA}" title="\large \mathrm{SCL} = \max\limits_{i\,\in\, C}\displaystyle\iint_{I_i}||M(p) - p_T||^2 \,\mathrm{dA}" /></a>
 
-This penalizes incorrect calculations heavily, and focuses on classifications over individual channels, allowing for the refinement of a prediction *as well as* segmentation.
+The function greatly penalizes incorrect calculations, and focuses on classifications over individual channels, allowing for the refinement of a class prediction *as well as* segmentation region.
 
 ## License and Contributions
 
