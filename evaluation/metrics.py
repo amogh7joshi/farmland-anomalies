@@ -69,7 +69,7 @@ def plot_result_logs(logs):
       # Plot the data.
       plt.plot(np.arange(0, len(metric_log)), metric_log, marker = 'o', label = name)
       if name in ['mIoU', 'Precision', 'Recall']:
-         plt.text(len(metric_log) - 1, metric_log[-1] - 0.15, f"{metric_log[-1]:.2f}%", ha = 'center')
+         plt.text(len(metric_log) - 1, metric_log[-1] - 0.15, f"{metric_log[-1] * 100:.2f}%", ha = 'center')
       else:
          plt.text(len(metric_log) - 1, metric_log[-1] - 0.15, f"{metric_log[-1]:.2f}", ha = 'center')
 
