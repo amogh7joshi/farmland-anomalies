@@ -31,14 +31,8 @@ def _display_test_image(image):
    else:
       raise AttributeError("This method is reserved for EagerTensors.")
 
-if __name__ == '__main__':
-   # Load the image data.
-   test_image = get_testing_image('test', 14)
-
-   # Make predictions on the test image and postprocess it.
-   predicted = model.predict(test_image)
-   predicted = postprocess_output(predicted)
-
+def plot_test_diagram(test_image, predicted):
+   """Plots a diagram displaying the test image and each channel's predictions."""
    # Plot the test image.
    fig, axes = plt.subplots(1, 9, figsize = (20, 6))
    fig.patch.set_facecolor('#2e3037ff')
@@ -61,6 +55,18 @@ if __name__ == '__main__':
       ax.set_title(evaluation_classes[indx], color = 'w')
 
    plt.show()
+
+if __name__ == '__main__':
+   # Load the image data.
+   test_image = get_testing_image('test', 14)
+
+   # Make predictions on the test image and postprocess it.
+   predicted = model.predict(test_image)
+   predicted = postprocess_output(predicted)
+
+   # Display the predictions.
+   plot_test_diagram(test_image, predicted)
+
 
 
 
