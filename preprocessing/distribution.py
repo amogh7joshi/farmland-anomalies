@@ -42,7 +42,7 @@ def plot_distribution(unique_classes, class_counts, background = 'light'):
 
    # Construct the figure.
    fig, ax = plt.subplots(figsize = (8, 8))
-   plt.title(r'$\bf{Dataset\;Class\;Imbalance}$')
+   plt.title(r'$\bf{Dataset\;Class\;Imbalance}$', fontsize = 20)
    if background == "dark":
       fig.patch.set_facecolor('#2e3037ff')
    elif background == "light":
@@ -53,7 +53,8 @@ def plot_distribution(unique_classes, class_counts, background = 'light'):
           color = ['cornflowerblue', 'orangered', 'deepskyblue', 'aquamarine', 'darkorange', 'springgreen'])
 
    # Configure the x- and y-axis.
-   plt.xticks(np.arange(len(class_counts)), unique_classes)
+   plt.xticks(np.arange(len(class_counts)), unique_classes, rotation = 30, fontsize = 14)
+   plt.yticks(fontsize = 11)
 
    # Display the plot.
    plt.show()

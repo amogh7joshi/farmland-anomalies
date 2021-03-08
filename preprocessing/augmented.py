@@ -87,10 +87,10 @@ def plot_augmented_single_example_images(num = 0, background = "light"):
          # Set title.
          if background == "dark":
             ax.set_title(image_type_title.replace('_', ' '),
-                         fontsize = 16, color = 'w')
+                         fontsize = 18, color = 'w')
          else:
             ax.set_title(image_type_title.replace('_', ' '),
-                         fontsize = 16, color = 'k')
+                         fontsize = 18, color = 'k')
 
       # Display plot.
       plt.show()
@@ -98,7 +98,7 @@ def plot_augmented_single_example_images(num = 0, background = "light"):
 if __name__ == '__main__':
    # Parse command line arguments.
    ap = argparse.ArgumentParser()
-   ap.add_argument('-v', '--val', default = 0, help = "The value of the image that you want to display.")
+   ap.add_argument('-v', '--val', default = 9, help = "The value of the image that you want to display.")
    args = ap.parse_args()
 
    # Run the main method.

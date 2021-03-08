@@ -236,10 +236,10 @@ def show_images_for_id(mode, id, background = 'light'):
          # Set the title.
          if background == "dark":
             ax.set_title(image_type_title.replace('_', ' '),
-                         fontsize = 15, color = 'w')
+                         fontsize = 17, color = 'w')
          else:
             ax.set_title(image_type_title.replace('_', ' '),
-                         fontsize = 15, color = 'k')
+                         fontsize = 17, color = 'k')
 
       # Display the image, with channels reversed.
       ax.imshow(images[indx // 10][image_type], vmin = 0, vmax = 255, cmap = 'magma')
