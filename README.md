@@ -1,6 +1,6 @@
 # Farmland Anomaly Detection and Segmentation
 
-![example](examples/evaluated-o1-21.png)
+![example](examples/segmentation-masks.png)
 
 ## Background
 
