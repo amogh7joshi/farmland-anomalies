@@ -103,7 +103,7 @@ def display_segmented_diagram(testing_image, prediction, truth = None, backgroun
       elif indx == 1 and truth is not None:
          ax.set_title("Ground Truth", fontsize=15)
       else:
-         ax.set_title("Ground Truth", fontsize=15)
+         ax.set_title("Prediction", fontsize=15)
 
    # Display the plot.
    savefig = plt.gcf()
