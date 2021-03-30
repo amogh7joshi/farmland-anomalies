@@ -9,3 +9,4 @@ matplotlib
 keras
 pillow
 deeptoolkit
+jupyter
