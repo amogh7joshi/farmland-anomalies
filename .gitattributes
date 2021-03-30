@@ -1,2 +1,1 @@
 *.ipynb linguist-vendored
-*.* linguist-language=Objective-C++
