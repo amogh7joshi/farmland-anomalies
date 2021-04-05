@@ -214,6 +214,8 @@ def show_images_for_id(mode, id, background = 'light'):
       fig.patch.set_facecolor('#2e3037ff')
    elif background == "light":
       fig.patch.set_facecolor('#efefefff')
+   elif background == "white":
+      fig.patch.set_facecolor('#ffffff')
    gs1 = gspec.GridSpec(1, len(images[0]))
    gs1.update(wspace = 0.1, hspace = 0.025)
    for indx in range(len(images[0])):
@@ -254,11 +256,15 @@ def show_images_for_id(mode, id, background = 'light'):
 if __name__ == '__main__':
    # Construct and parse command line arguments.
    ap = argparse.ArgumentParser()
-   ap.add_argument('--directory', default = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Agriculture-Vision'),
+   ap.add_argument('--directory',
+                   default = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Agriculture-Vision'),
                    help = 'The directory path to the dataset, default is ../data/Agriculture-Vision.')
-   ap.add_argument('--save', default = False, action = 'store_true', help = 'Pass to save inspected images to a figure image file..')
-   ap.add_argument('--mode', default = 'id', help = 'Which mode, either random [general] images, random [specific] images, or an image [id].')
-   ap.add_argument('--id', default = None, help = 'If displaying an image ID, then provide the image ID.')
+   ap.add_argument('--save', default = False, action = 'store_true',
+                   help = 'Pass to save inspected images to a figure image file..')
+   ap.add_argument('--mode', default = 'id',
+                   help = 'Which mode, either random [general] images, random [specific] images, or an image [id].')
+   ap.add_argument('--id', default = None,
+                   help = 'If displaying an image ID, then provide the image ID.')
    args = ap.parse_args()
 
    # Define global values.
@@ -277,7 +283,7 @@ if __name__ == '__main__':
    elif args.mode == 'general':
       show_random_general_images(4, image_files, complete_paths, args.save)
    elif args.mode == 'id':
-      show_images_for_id('val', dataset.image_ids['val'][4])
+      show_images_for_id('val', dataset.image_ids['val'][9], background = "white")
    else:
       raise ValueError("You have provided an invalid mode, should be [random] or [general].")
 

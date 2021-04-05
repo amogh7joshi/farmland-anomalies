@@ -19,12 +19,12 @@ from model.loss import surface_channel_loss_2d, dice_loss_2d
 from tensorflow.keras.models import load_model
 
 # Construct Dataset.
-dataset = AgricultureVisionDataset()
+dataset = AgricultureVisionDataset(augmentation = True)
 dataset.construct()
-evaluation_data = dataset.evaluation_dataset(batch = 1)
+# evaluation_data = dataset.evaluation_dataset(batch = 1)
 
 # Load model.
-model = load_model('../logs/nokia-save/Model-Dice2D-20.hdf5',
+model = load_model('../logs/save/Model-Dice-SCL-Dice-60.hdf5',
                    custom_objects = {'dice_loss_2d': dice_loss_2d})
 
 # Construct list of evaluation classes.
@@ -49,7 +49,7 @@ def display_validation_image(num = 10, mode = 'save', background = 'light'):
       valid_indices = False
 
    # Construct figure.
-   for i, (x, y) in enumerate(itertools.islice(dataset.train_data, num)):
+   for i, (x, y) in enumerate(itertools.islice(dataset.evaluation_dataset(1), num)):
       # Skip if expected to.
       if valid_indices:
          if i not in valid_indices:
@@ -66,6 +66,8 @@ def display_validation_image(num = 10, mode = 'save', background = 'light'):
          fig.patch.set_facecolor('#2e3037ff')
       elif background == "light":
          fig.patch.set_facecolor('#efefefff')
+      elif background == "white":
+         fig.patch.set_facecolor('#ffffff')
 
       # Display images in figure.
       for indx, ax in enumerate(axes.flat):
@@ -77,9 +79,9 @@ def display_validation_image(num = 10, mode = 'save', background = 'light'):
             ax.imshow(x[0, :, :, 1:])
          elif indx < 9: # Show labels and masks.
             if background == 'dark':
-               ax.set_title(dataset.class_list[indx - 1], fontsize = 14, color = 'w')
+               ax.set_title(dataset.class_list[indx - 1], fontsize = 16, color = 'w')
             else:
-               ax.set_title(dataset.class_list[indx - 1], fontsize = 14, color = 'k')
+               ax.set_title(dataset.class_list[indx - 1], fontsize = 16, color = 'k')
             ax.imshow(y[0, :, :, indx - 1], cmap = 'gray')
          elif indx == 9: # Show original image (nir).
             ax.imshow(x[0, :, :, 0])
@@ -104,7 +106,7 @@ def display_validation_image(num = 10, mode = 'save', background = 'light'):
       if mode == 'save':
          savefig = plt.gcf()
          save_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                  'images/final_images', f'evaluated-20-{i + 1}.png')
+                                  'images', f'evaluated-cheese-{i + 1}.png')
          if os.path.exists(save_path):
             os.remove(save_path)
          savefig.savefig(save_path)
@@ -116,14 +118,14 @@ def display_validation_image(num = 10, mode = 'save', background = 'light'):
 if __name__ == '__main__':
    # Construct parser and parse command line arguments.
    ap = argparse.ArgumentParser()
-   ap.add_argument('--num-images', default = 30, type = int or tuple or list,
+   ap.add_argument('--num-images', default = 10, type = int or tuple or list,
                    help = 'The number of images to evaluate.')
    ap.add_argument('--mode', default = 'save', type = str,
                    help = 'The evaluation mode: either show figures or save to image files.')
    args = ap.parse_args()
 
    # Execute evaluation.
-   display_validation_image(args.num_images, args.mode)
+   display_validation_image(args.num_images, args.mode, background = "white")
 
 
 

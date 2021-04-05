@@ -110,6 +110,10 @@ def plot_only_accuracy(accuracy, val_accuracy, background = 'light'):
       plt.rcParams['figure.facecolor'] = '#2e3037ff'
    elif background == "light":
       plt.rcParams['figure.facecolor'] = '#efefefff'
+   elif background == "white":
+      plt.rcParams['figure.facecolor'] = '#ffffff'
+
+   fig.patch.set_facecolor('#ffffff')
 
    # Plot the data.
    ax.plot(np.arange(1, len(accuracy) + 1, 1), accuracy,
@@ -121,8 +125,9 @@ def plot_only_accuracy(accuracy, val_accuracy, background = 'light'):
    ax.set_ylim(min(min(val_accuracy), min(accuracy)) - 0.1,
             min(max(max(val_accuracy), max(accuracy)) + 0.10, 1.0))
    ax.set_xlim(1, len(accuracy))
-   plt.xticks([i for i in range(1, len(accuracy) + 1, 1)], fontsize = 12)
+   plt.xticks([i for i in range(1, len(accuracy) + 1, 1)], fontsize = 14)
    plt.xlabel('Epoch', fontsize = 15)
+   plt.ylabel('Accuracy', fontsize = 15)
 
    # Format the graph.
    ax.axhline(y = plt.axis()[2] + 0.01, color = 'black', linewidth = 1.3, alpha = 0.7)
@@ -139,8 +144,8 @@ def plot_only_accuracy(accuracy, val_accuracy, background = 'light'):
    ]
 
    # Set the legend.
-   l1 = plt.legend(loc = 'upper right', facecolor = 'w', framealpha = 1.0)
-   plt.legend(handles = legend_items, loc = 'upper left', facecolor = 'w', framealpha = 1.0)
+   l1 = plt.legend(loc = 'upper right', facecolor = 'w', framealpha = 1.0, prop = {'size': 13})
+   plt.legend(handles = legend_items, loc = 'upper left', facecolor = 'w', framealpha = 1.0, prop = {'size': 13})
    ax.add_artist(l1)
 
    # Display the plot.
@@ -151,4 +156,4 @@ if __name__ == '__main__':
    accuracy, val_accuracy, loss, val_loss = construct_complete_log()
 
    # Construct the plot.
-   plot_only_accuracy(accuracy, val_accuracy)
+   plot_only_accuracy(accuracy, val_accuracy, background = 'white')
