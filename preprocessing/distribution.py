@@ -47,6 +47,8 @@ def plot_distribution(unique_classes, class_counts, background = 'light'):
       fig.patch.set_facecolor('#2e3037ff')
    elif background == "light":
       fig.patch.set_facecolor('#efefefff')
+   elif background == "white":
+      fig.patch.set_facecolor('#ffffff')
 
    # Plot the distribution.
    ax.bar(np.arange(len(class_counts)), class_counts,
@@ -66,12 +68,14 @@ def create_pie_distribution(unique_classes, class_counts, background = 'light'):
    class_counts = [item for item in class_counts]
 
    # Construct the figure.
-   fig, ax = plt.subplots(figsize = (10, 10))
+   fig, ax = plt.subplots(figsize = (10, 10), constrained_layout = True)
    plt.title(r'$\bf{Dataset\;Class\;Imbalance}$', fontsize = 20)
    if background == "dark":
       fig.patch.set_facecolor('#2e3037ff')
    elif background == "light":
       fig.patch.set_facecolor('#efefefff')
+   elif background == "white":
+      fig.patch.set_facecolor("#ffffff")
 
    # Plot the distribution.
    ax.pie(class_counts, labels = unique_classes, shadow = True,
@@ -92,4 +96,4 @@ if __name__ == '__main__':
    classes, counts = get_unique_classes(train_dict, val_dict)
 
    # Plot the unique classes frequency distribution.
-   create_pie_distribution(classes, counts)
+   create_pie_distribution(classes, counts, background = "white")
