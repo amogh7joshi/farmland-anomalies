@@ -73,7 +73,7 @@ def draw_segmentation_map(main_image, predictions):
    # Return the annotated image.
    return main_image
 
-def display_segmented_diagram(testing_image, prediction, truth = None, background = 'light', save = False):
+def display_segmented_diagram(testing_image, prediction, truth = None, background = 'white', save = False):
    """Displays a segmented pair of images (the prediction and the ground truth)."""
    # Create the figure.
    if truth is not None:
@@ -84,15 +84,17 @@ def display_segmented_diagram(testing_image, prediction, truth = None, backgroun
       images = [testing_image, prediction]
 
    # Set the background color.
-   if background == "dark":
+   if background == 'dark':
       fig.patch.set_facecolor('#2e3037ff')
    elif background == 'light':
       fig.patch.set_facecolor('#efefefff')
+   elif background == 'white':
+      fig.patch.set_facecolor('#ffffff')
 
    # Display each of the images on the plots.
    for indx, ax in enumerate(axes):
       # Show the image.
-      ax.imshow(images[indx])
+      ax.imshow(images[indx], cmap = 'magma')
 
       # Remove the axes and perform a bit of formatting.
       ax.axis('off')
@@ -115,9 +117,9 @@ def display_segmented_diagram(testing_image, prediction, truth = None, backgroun
 
 if __name__ == '__main__':
    # Load the image data.
-   test_image, test_label = get_testing_image('train', 36, with_truth = True)
+   test_image, test_label = get_testing_image('train', 19, with_truth = True)
 
-   # Make predictions on the test image and postprocess the data..
+   # Make predictions on the test image and postprocess the data.
    predicted = model.predict(test_image)
    predicted = postprocess_output(predicted)
 

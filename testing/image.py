@@ -60,7 +60,7 @@ def get_testing_image(mode, value = None, with_truth = False):
 def create_displayable_test_output(test_image):
    """Processes an (already post-processed) test image to a displayable format."""
    if hasattr(test_image, "numpy"):
-      return np.squeeze(test_image.numpy())[:, :, :3]
+      return np.squeeze(test_image.numpy())[:, :, 1:]
    else:
-      return np.squeeze(test_image)[:, :, :3]
+      return np.squeeze(test_image)[:, :, 1:]
 
