@@ -272,7 +272,7 @@ class _AgricultureVisionContainer(object):
 
       return nrgb_image, final_label
 
-   def create(self):
+   def create(self, batch_size = 8):
       """Creates a tf.data.Dataset for dataset type."""
       # Construct list of file locations for all images in class.
       file_locations = self.data_file_list
@@ -280,7 +280,7 @@ class _AgricultureVisionContainer(object):
       # Create datasets.
       dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
                                .map(lambda m: self.image_process(m)) \
-                               .batch(8).prefetch(8)
+                               .batch(batch_size).prefetch(batch_size)
       self.dataset = dataset
 
       return self.dataset
@@ -382,16 +382,18 @@ class AgricultureVisionDataset(object):
          if self.dtype == 'full':
             total_len = 0
             for dtype in ['train', 'val', 'test']:
-               cls = _AgricultureVisionContainer(dtype, self.augmentation, self.dataset_location, self.processed_paths)
+               cls = _AgricultureVisionContainer(
+                  dtype, self.augmentation, self.dataset_location, self.processed_paths)
                print(len(cls))
                total_len += len(cls)
             return total_len
          else:
             if not hasattr(self, f'{self.dtype}_data'):
                raise ValueError("Missing dataset, construct first before converting.")
-            return len(_AgricultureVisionWrapper(self.dtype, self.augmentation, self.dataset_location, self.processed_paths))
+            return len(_AgricultureVisionWrapper(
+               self.dtype, self.augmentation, self.dataset_location, self.processed_paths))
 
-   def construct(self):
+   def construct(self, batch_size):
       """Construction method, which develops each dataset."""
       self._numpy_conversion = False
       self.constructed = True
@@ -399,14 +401,16 @@ class AgricultureVisionDataset(object):
          complete_data = []
          for indx, dtype in enumerate(['train', 'val', 'test']):
             property_name = str(dtype + '_data')
-            cls = _AgricultureVisionContainer(dtype, self.augmentation, self.dataset_location, self.processed_paths)
-            cls_dataset = cls.create()
+            cls = _AgricultureVisionContainer(
+               dtype, self.augmentation, self.dataset_location, self.processed_paths)
+            cls_dataset = cls.create(batch_size = batch_size)
             complete_data.append(cls_dataset)
             setattr(AgricultureVisionDataset, property_name, cls_dataset)
             self.image_ids[dtype] = cls.image_ids
          return complete_data
       else:
-         cls = _AgricultureVisionWrapper(self.dtype, self.augmentation, self.dataset_location, self.processed_paths)
+         cls = _AgricultureVisionWrapper(
+            self.dtype, self.augmentation, self.dataset_location, self.processed_paths)
          cls_attr = getattr(cls, f'{self.dtype}_data')
          setattr(AgricultureVisionDataset, f'{self.dtype}_data', cls_attr)
          self.image_ids[self.dtype] = cls.image_ids
