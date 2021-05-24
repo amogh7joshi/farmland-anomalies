@@ -277,6 +277,10 @@ class _AgricultureVisionContainer(object):
       # Construct list of file locations for all images in class.
       file_locations = self.data_file_list
 
+      # Adjust the batch size.
+      if batch_size is None:
+         batch_size = 8
+
       # Create datasets.
       dataset = tf.data.Dataset.from_tensor_slices(np.array(file_locations)) \
                                .map(lambda m: self.image_process(m)) \
@@ -393,7 +397,7 @@ class AgricultureVisionDataset(object):
             return len(_AgricultureVisionWrapper(
                self.dtype, self.augmentation, self.dataset_location, self.processed_paths))
 
-   def construct(self, batch_size):
+   def construct(self, batch_size = None):
       """Construction method, which develops each dataset."""
       self._numpy_conversion = False
       self.constructed = True
@@ -403,7 +407,7 @@ class AgricultureVisionDataset(object):
             property_name = str(dtype + '_data')
             cls = _AgricultureVisionContainer(
                dtype, self.augmentation, self.dataset_location, self.processed_paths)
-            cls_dataset = cls.create(batch_size = batch_size)
+            cls_dataset = cls.create(batch_size = None)
             complete_data.append(cls_dataset)
             setattr(AgricultureVisionDataset, property_name, cls_dataset)
             self.image_ids[dtype] = cls.image_ids
